@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Masuk - EWS Akademik{% endblock %}
+
+{% block content %}
+  <div class="login-layout">
+    <section class="login-brand" aria-label="Tentang EWS Akademik">
+      <a class="login-brand__logo" href="{{ url_for('login') }}" aria-label="EWS Akademik">
+        <span class="login-brand__ikon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d="M12 6.2C9.7 4.7 6.8 4.5 3.8 5.3v12.2c3-.8 5.9-.6 8.2.9m0-12.2c2.3-1.5 5.2-1.7 8.2-.9v12.2c-3-.8-5.9-.6-8.2.9m0-12.2v12.2" />
+          </svg>
+        </span>
+        <span class="login-brand__wordmark">
+          <strong>EWS</strong>
+          <small>ACADEMIC EARLY WARNING</small>
+        </span>
+      </a>
+
+      <div class="login-brand__intro">
+        <p class="login-eyebrow">Ruang akademik</p>
+        <h1>Early Warning System</h1>
+        <p>Prediksi mahasiswa berisiko untuk intervensi akademik.</p>
+      </div>
+
+      <div class="login-brand__footer">
+        <strong>Setiap mahasiswa berarti.</strong>
+        <p>Prediksi sebagai pendukung keputusan.</p>
+      </div>
+    </section>
+
+    <section class="login-panel" aria-labelledby="judul-login">
+      <div class="login-panel__content">
+        <p class="login-eyebrow">Akses akun</p>
+        <h2 id="judul-login">Selamat datang</h2>
+        <form class="login-form" method="post" action="{{ url_for('login') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="formulir__kelompok">
+            <label class="input-label" for="peran">Peran</label>
+            <select class="input-kontrol" id="peran" name="peran" required>
+              <option value="">Pilih peran</option>
+              <option value="dosen_wali" {% if request.form.get('peran') == 'dosen_wali' %}selected{% endif %}>Dosen Wali</option>
+              <option value="staf_akademik" {% if request.form.get('peran') == 'staf_akademik' %}selected{% endif %}>Staf Akademik</option>
+            </select>
+          </div>
+          <div class="formulir__kelompok">
+            <label class="input-label" for="kata_sandi">Kata sandi</label>
+            <div class="login-password">
+              <input
+                class="input-kontrol"
+                id="kata_sandi"
+                name="kata_sandi"
+                type="password"
+                placeholder="Masukkan kata sandi"
+                autocomplete="current-password"
+                required>
+              <button
+                class="login-password__toggle"
+                type="button"
+                aria-controls="kata_sandi"
+                aria-pressed="false">Tampilkan</button>
+            </div>
+          </div>
+          <button class="tombol login-submit" type="submit">Masuk</button>
+        </form>
+      </div>
+      <footer class="login-panel__footer">
+        <p>Jaga kerahasiaan akun Anda.</p>
+        <span>EWS · Early Warning System</span>
+      </footer>
+    </section>
+  </div>
+
+  <script>
+    const kataSandi = document.getElementById("kata_sandi");
+    const tombolTampilkan = document.querySelector(".login-password__toggle");
+    tombolTampilkan.addEventListener("click", () => {
+      const terlihat = kataSandi.type === "password";
+      kataSandi.type = terlihat ? "text" : "password";
+      tombolTampilkan.textContent = terlihat ? "Sembunyikan" : "Tampilkan";
+      tombolTampilkan.setAttribute("aria-pressed", String(terlihat));
+    });
+  </script>
+{% endblock %}

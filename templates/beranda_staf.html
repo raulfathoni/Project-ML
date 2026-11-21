@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Staf Akademik - EWS Akademik{% endblock %}
+
+{% block content %}
+  <div class="dashboard dashboard-staf">
+    <header class="dashboard-header">
+      <div>
+        <p class="dashboard-header__label">Ruang akademik</p>
+        <h1 class="judul-halaman">Pemantauan data akademik</h1>
+        <p class="dashboard-header__deskripsi">Unggah data mahasiswa untuk menjalankan prediksi secara berkelompok.</p>
+      </div>
+      <a class="tombol tombol--primer" href="{{ url_for('unggah') }}">Unggah data CSV</a>
+    </header>
+
+    <section class="ringkasan-grid" aria-label="Ringkasan pemrosesan CSV">
+      <article class="ringkasan-kartu">
+        <h2 class="ringkasan-kartu__label">Prediksi dari CSV</h2>
+        <p class="ringkasan-kartu__nilai">{{ jumlah_csv }}</p>
+      </article>
+      <article class="ringkasan-kartu ringkasan-kartu--risiko">
+        <h2 class="ringkasan-kartu__label">Berisiko tinggi</h2>
+        <p class="ringkasan-kartu__nilai">{{ jumlah_csv_berisiko }}</p>
+      </article>
+      <article class="ringkasan-kartu ringkasan-kartu--normal">
+        <h2 class="ringkasan-kartu__label">Normal</h2>
+        <p class="ringkasan-kartu__nilai">{{ jumlah_csv_normal }}</p>
+      </article>
+    </section>
+
+    <section class="kartu prioritas-mahasiswa" aria-labelledby="judul-riwayat-csv">
+      <div class="bagian-dashboard__kepala prioritas-mahasiswa__kepala">
+        <div>
+          <h2 id="judul-riwayat-csv">Prediksi CSV terbaru</h2>
+          <p>Ringkasan hasil pemrosesan CSV yang tersimpan.</p>
+        </div>
+        <a class="tombol tombol--sekunder" href="{{ url_for('riwayat', sumber='csv') }}">Lihat riwayat</a>
+      </div>
+      {% if riwayat_csv %}
+        <div class="tabel-bungkus">
+          <table class="tabel-data">
+            <thead>
+              <tr>
+                <th scope="col">ID pseudonim</th>
+                <th scope="col">Waktu</th>
+                <th scope="col">Nilai prediksi</th>
+                <th scope="col">Kategori</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in riwayat_csv %}
+                <tr>
+                  <td>{{ item.id_pseudonim or "Tidak dicantumkan" }}</td>
+                  <td>{{ item.waktu }}</td>
+                  <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
+                  <td>{{ item.kategori }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="keadaan-kosong" role="status">
+          <h3>Belum ada data CSV yang diproses</h3>
+          <p>Unduh template, lengkapi data, lalu unggah berkas CSV.</p>
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="bagian-dashboard" id="informasi-model" aria-labelledby="judul-informasi-model">
+      <div class="bagian-dashboard__kepala">
+        <div>
+          <h2 id="judul-informasi-model">Informasi model</h2>
+          <p>Ringkasan versi dan evaluasi model prediksi.</p>
+        </div>
+      </div>
+      <section class="ringkasan-grid" aria-label="Metadata model">
+        <article class="ringkasan-kartu">
+          <h3 class="ringkasan-kartu__label">Versi model</h3>
+          <p class="ringkasan-kartu__nilai">{{ versi_model }}</p>
+        </article>
+        <article class="ringkasan-kartu">
+          <h3 class="ringkasan-kartu__label">Tanggal pelatihan</h3>
+          <p class="ringkasan-kartu__nilai ringkasan-kartu__nilai--tanggal">{{ tanggal_pelatihan }}</p>
+        </article>
+        <article class="ringkasan-kartu">
+          <h3 class="ringkasan-kartu__label">Jumlah fitur</h3>
+          <p class="ringkasan-kartu__nilai">{{ jumlah_fitur }}</p>
+        </article>
+        <article class="ringkasan-kartu">
+          <h3 class="ringkasan-kartu__label">Ambang risiko tinggi</h3>
+          <p class="ringkasan-kartu__nilai">&lt; {{ "%.1f"|format(ambang_risiko) }}</p>
+        </article>
+      </section>
+      {% include "_kepentingan_model.html" %}
+      <dl class="metrik-grid">
+        <div class="metrik-kartu"><dt>MAE</dt><dd>{{ "%.2f"|format(metrik_test["MAE"]) }}</dd></div>
+        <div class="metrik-kartu"><dt>RMSE</dt><dd>{{ "%.2f"|format(metrik_test["RMSE"]) }}</dd></div>
+        <div class="metrik-kartu"><dt>R²</dt><dd>{{ "%.2f"|format(metrik_test["R2"]) }}</dd></div>
+      </dl>
+    </section>
+
+    <aside class="banner-hasil" role="note">
+      <span class="banner-hasil__ikon" aria-hidden="true">!</span>
+      <p class="banner-hasil__teks">Hasil prediksi merupakan pendukung keputusan, bukan keputusan otomatis.</p>
+    </aside>
+  </div>
+{% endblock %}

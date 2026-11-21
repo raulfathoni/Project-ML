@@ -1,0 +1,105 @@
+:root {
+  /* Warna dasar */
+  --warna-primer: #087F73;
+  --warna-latar: #F6F6F7;
+  --warna-permukaan: #FFFFFF;
+  --warna-permukaan-lembut: #FAFAFB;
+  --warna-permukaan-gelap: #34373D;
+  --warna-arang: #41444B;
+  --warna-pemisah-gelap: #60646C;
+
+  /* Teks dan garis */
+  --warna-teks: #27292D;
+  --warna-teks-redup: #6B6E75;
+  --warna-teks-sekunder: #646870;
+  --warna-teks-tertiar: #4D5159;
+  --warna-teks-pucat: #D5D8DF;
+  --warna-teks-terang: #FFFFFF;
+  --warna-garis: #E3E4E7;
+  --warna-garis-halus: #DDE0E5;
+  --warna-garis-kontrol: #BFC2C8;
+  --warna-garis-putus: #C7CBD2;
+  --lebar-garis: 1px;
+  --lebar-garis-tebal: 2px;
+  --lebar-garis-nol: 0;
+  --warna-transparan: transparent;
+
+  /* Status risiko */
+  --warna-bahaya: #B74840;
+  --latar-bahaya: #FFF0ED;
+  --latar-bahaya-lencana: #F9DCD5;
+  --warna-bahaya-grafik: #DB766A;
+  --warna-aman: #087F73;
+  --latar-aman: #E8F5EF;
+  --latar-aman-validasi: #CEEBDD;
+  --warna-aman-grafik: #339986;
+  --warna-peringatan: #946318;
+  --latar-peringatan: #FFF6E2;
+  --warna-peringatan-grafik: #EDC66F;
+  --warna-metrik-hangat: #E6BD68;
+
+  /* Permukaan dan grafik netral */
+  --warna-lintasan: #ECEEF1;
+  --warna-latar-ikon-netral: #F0F1F3;
+  --warna-latar-peringatan-netral: #EEEFF1;
+  --warna-latar-tabel: #F3F4F5;
+  --warna-grafik-netral: #9A9FA8;
+
+  /* Tipografi */
+  --font-keluarga: 'Inter', sans-serif;
+  --ketebalan-teks-normal: 400;
+  --ketebalan-teks-sedang: 500;
+  --ketebalan-teks-semi-tebal: 600;
+  --ketebalan-teks-tebal: 700;
+  --tinggi-baris: 145%;
+
+  --ukuran-teks-9: 9px;
+  --ukuran-teks-10: 10px;
+  --ukuran-teks-11: 11px;
+  --ukuran-teks-12: 12px;
+  --ukuran-teks-13: 13px;
+  --ukuran-teks-14: 14px;
+  --ukuran-teks-15: 15px;
+  --ukuran-teks-16: 16px;
+  --ukuran-teks-17: 17px;
+  --ukuran-teks-18: 18px;
+  --ukuran-teks-19: 19px;
+  --ukuran-teks-22: 22px;
+  --ukuran-teks-23: 23px;
+  --ukuran-teks-25: 25px;
+  --ukuran-teks-26: 26px;
+  --ukuran-teks-32: 32px;
+  --ukuran-teks-35: 35px;
+  --ukuran-teks-36: 36px;
+
+  /* Sudut */
+  --sudut-2: 2px;
+  --sudut-3: 3px;
+  --sudut-4: 4px;
+  --sudut-5: 5px;
+  --sudut-6: 6px;
+  --sudut-7: 7px;
+  --sudut-8: 8px;
+  --sudut-9: 9px;
+  --sudut-10: 10px;
+  --sudut-11: 11px;
+  --sudut-13: 13px;
+  --sudut-14: 14px;
+  --sudut-17: 17px;
+  --sudut-22: 22px;
+  --sudut-23: 23px;
+
+  /* Jarak */
+  --jarak-0: 0;
+  --jarak-1: 4px;
+  --jarak-2: 8px;
+  --jarak-3: 12px;
+  --jarak-4: 16px;
+  --jarak-5: 20px;
+  --jarak-6: 24px;
+  --jarak-7: 28px;
+  --jarak-8: 32px;
+
+  /* Snapshot tidak menetapkan efek bayangan. */
+  --bayangan: none;
+}

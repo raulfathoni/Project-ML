@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}{{ judul }} - EWS Akademik{% endblock %}
+
+{% block content %}
+  <section class="halaman-galat kartu" aria-labelledby="judul-galat">
+    <p class="halaman-galat__kode">{{ kode }}</p>
+    <h1 class="judul-halaman" id="judul-galat">{{ judul }}</h1>
+    <p>{{ pesan }}</p>
+    <a class="tombol tombol--primer" href="{{ url_for('beranda') }}">Kembali ke beranda</a>
+  </section>
+{% endblock %}

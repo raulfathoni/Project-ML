@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Riwayat Prediksi - EWS Akademik{% endblock %}
+
+{% block content %}
+  <div class="halaman-riwayat">
+    <header class="halaman-kepala">
+      <p class="dashboard-header__label">Pemantauan hasil</p>
+      <h1 class="judul-halaman">Riwayat prediksi</h1>
+      <p>Hasil prediksi tersimpan ditampilkan tanpa data masukan mahasiswa.</p>
+    </header>
+
+    <section class="kartu" aria-labelledby="judul-filter-riwayat">
+      <h2 class="kartu__judul" id="judul-filter-riwayat">Filter riwayat</h2>
+      <form class="filter-riwayat" method="get" action="{{ url_for('riwayat') }}">
+        <div class="formulir__kelompok">
+          <label class="input-label" for="filter-kategori-riwayat">Kategori</label>
+          <select class="input-kontrol" id="filter-kategori-riwayat" name="kategori">
+            <option value="" {% if not filter_kategori %}selected{% endif %}>Semua kategori</option>
+            <option value="Berisiko Tinggi" {% if filter_kategori == "Berisiko Tinggi" %}selected{% endif %}>Berisiko Tinggi</option>
+            <option value="Normal" {% if filter_kategori == "Normal" %}selected{% endif %}>Normal</option>
+          </select>
+        </div>
+        <div class="formulir__kelompok">
+          <label class="input-label" for="filter-sumber-riwayat">Sumber</label>
+          <select class="input-kontrol" id="filter-sumber-riwayat" name="sumber">
+            <option value="" {% if not filter_sumber %}selected{% endif %}>Semua sumber</option>
+            <option value="formulir" {% if filter_sumber == "formulir" %}selected{% endif %}>Formulir individu</option>
+            <option value="csv" {% if filter_sumber == "csv" %}selected{% endif %}>CSV</option>
+          </select>
+        </div>
+        <div class="filter-riwayat__aksi">
+          <button class="tombol tombol--primer" type="submit">Terapkan filter</button>
+          <a class="tombol tombol--sekunder" href="{{ url_for('riwayat') }}">Hapus filter</a>
+        </div>
+      </form>
+    </section>
+
+    <section class="bagian-riwayat" aria-labelledby="judul-daftar-riwayat">
+      <div class="bagian-riwayat__kepala">
+        <h2 id="judul-daftar-riwayat">Hasil tersimpan</h2>
+        <p>{{ jumlah_riwayat }} hasil{% if jumlah_riwayat != 1 %} prediksi{% endif %}</p>
+      </div>
+
+      {% if riwayat %}
+        <div class="tabel-bungkus">
+          <table class="tabel-data tabel-riwayat">
+            <thead>
+              <tr>
+                <th scope="col">ID pseudonim</th>
+                <th scope="col">Waktu</th>
+                <th scope="col">Versi model</th>
+                <th scope="col">Nilai prediksi</th>
+                <th scope="col">Kategori</th>
+                <th scope="col">Sumber</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in riwayat %}
+                <tr>
+                  <td>{{ item.id_pseudonim or "Tidak dicantumkan" }}</td>
+                  <td><time datetime="{{ item.waktu }}">{{ item.waktu }}</time></td>
+                  <td>{{ item.versi_model }}</td>
+                  <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
+                  <td>
+                    {% if item.kategori == "Berisiko Tinggi" %}
+                      <span class="badge-kategori badge-kategori--berisiko-tinggi">
+                        <span class="badge-kategori__ikon" aria-hidden="true"></span>
+                        Berisiko Tinggi
+                      </span>
+                    {% else %}
+                      <span class="badge-kategori badge-kategori--normal">
+                        <span class="badge-kategori__ikon" aria-hidden="true"></span>
+                        Normal
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if item.sumber == "formulir" %}Formulir individu{% else %}CSV{% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {% if jumlah_halaman > 1 %}
+          <nav class="paginasi-riwayat" aria-label="Paginasi riwayat prediksi">
+            {% if halaman > 1 %}
+              <a class="tombol tombol--sekunder"
+                 href="{{ url_for('riwayat', kategori=filter_kategori or None, sumber=filter_sumber or None, halaman=halaman - 1) }}">
+                Sebelumnya
+              </a>
+            {% else %}
+              <span class="tombol tombol--sekunder tombol--nonaktif" aria-disabled="true">Sebelumnya</span>
+            {% endif %}
+            <span class="paginasi-riwayat__status">Halaman {{ halaman }} dari {{ jumlah_halaman }}</span>
+            {% if halaman < jumlah_halaman %}
+              <a class="tombol tombol--sekunder"
+                 href="{{ url_for('riwayat', kategori=filter_kategori or None, sumber=filter_sumber or None, halaman=halaman + 1) }}">
+                Berikutnya
+              </a>
+            {% else %}
+              <span class="tombol tombol--sekunder tombol--nonaktif" aria-disabled="true">Berikutnya</span>
+            {% endif %}
+          </nav>
+        {% endif %}
+      {% elif filter_kategori or filter_sumber %}
+        <div class="keadaan-kosong" role="status">
+          <h3>Tidak ada hasil yang cocok</h3>
+          <p>Coba ubah kategori atau sumber, atau hapus filter untuk melihat semua riwayat.</p>
+        </div>
+      {% else %}
+        <div class="keadaan-kosong" role="status">
+          <h3>Belum ada riwayat prediksi</h3>
+          <p>Hasil prediksi dari formulir individu atau unggahan CSV akan muncul di sini.</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}

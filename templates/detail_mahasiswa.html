@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Detail Mahasiswa - EWS Akademik{% endblock %}
+
+{% block content %}
+  <div class="halaman-detail-mahasiswa">
+    <header class="dashboard-header">
+      <div>
+        <a class="tautan-kembali" href="{{ url_for('mahasiswa') }}">← Kembali ke mahasiswa</a>
+        <p class="dashboard-header__label">Detail risiko mahasiswa</p>
+        <h1 class="judul-halaman">{{ mahasiswa.nama or "Nama belum diisi" }}</h1>
+        <p class="dashboard-header__deskripsi">ID {{ mahasiswa.id_mahasiswa }} · Prediksi terakhir {{ mahasiswa.waktu }}</p>
+      </div>
+    </header>
+
+    <section class="detail-ringkasan">
+      <article class="ringkasan-kartu">
+        <h2 class="ringkasan-kartu__label">Prediksi nilai semester 2</h2>
+        <p class="ringkasan-kartu__nilai">{{ "%.2f"|format(mahasiswa.nilai_prediksi) }} <small>/ 20</small></p>
+      </article>
+      <article class="ringkasan-kartu {% if mahasiswa.kategori == 'Berisiko Tinggi' %}ringkasan-kartu--risiko{% else %}ringkasan-kartu--normal{% endif %}">
+        <h2 class="ringkasan-kartu__label">Kategori risiko</h2>
+        <p class="ringkasan-kartu__nilai">{{ mahasiswa.kategori }}</p>
+      </article>
+      <article class="ringkasan-kartu">
+        <h2 class="ringkasan-kartu__label">Status tindak lanjut</h2>
+        <p class="ringkasan-kartu__nilai ringkasan-kartu__nilai--tanggal">{{ mahasiswa.status_tindak_lanjut }}</p>
+      </article>
+    </section>
+
+    <div class="detail-mahasiswa__grid">
+      <section class="kartu sinyal-aktual" aria-labelledby="judul-sinyal-aktual">
+        <h2 class="kartu__judul" id="judul-sinyal-aktual">Kondisi yang perlu ditinjau</h2>
+        <p>Ringkasan di bawah berasal dari data yang dimasukkan. Nilai akademik ditampilkan apa adanya, tanpa ambang risiko buatan.</p>
+        {% if mahasiswa.sinyal %}
+          <div class="sinyal-aktual__kelompok">
+            <h3>Akademik</h3>
+            <dl class="daftar-sinyal">
+              {% for item in mahasiswa.sinyal.akademik %}
+                <div>
+                  <dt>{{ item.label }}</dt>
+                  <dd>{{ item.nilai }}</dd>
+                </div>
+              {% endfor %}
+            </dl>
+          </div>
+          <div class="sinyal-aktual__kelompok">
+            <h3>Keuangan dan beasiswa</h3>
+            <dl class="daftar-sinyal">
+              {% for item in mahasiswa.sinyal.keuangan %}
+                <div>
+                  <dt>{{ item.label }}</dt>
+                  <dd>
+                    {% if item.perhatian %}
+                      <span class="status-sinyal status-sinyal--perhatian">{{ item.nilai }}</span>
+                    {% else %}
+                      <span class="status-sinyal">{{ item.nilai }}</span>
+                    {% endif %}
+                  </dd>
+                </div>
+              {% endfor %}
+            </dl>
+          </div>
+        {% else %}
+          <div class="keadaan-kosong" role="status">
+            <p>Data fitur belum tersimpan untuk prediksi ini. Jalankan prediksi baru untuk melihat ringkasan kondisi.</p>
+          </div>
+        {% endif %}
+      </section>
+
+      <section class="kartu hasil-bagian" aria-labelledby="judul-rekomendasi-mahasiswa">
+        <h2 class="kartu__judul" id="judul-rekomendasi-mahasiswa">Rekomendasi pendampingan</h2>
+        <ul class="daftar-teks">
+          {% for saran in mahasiswa.rekomendasi %}
+            <li>{{ saran }}</li>
+          {% else %}
+            <li>Diskusikan kebutuhan dukungan dengan mahasiswa dan lakukan pemantauan berkala.</li>
+          {% endfor %}
+        </ul>
+      </section>
+    </div>
+
+    <section class="kartu tindak-lanjut" aria-labelledby="judul-tindak-lanjut">
+      <div>
+        <h2 class="kartu__judul" id="judul-tindak-lanjut">Catatan pendampingan</h2>
+        <p>Catatan dan status tersimpan untuk profil mahasiswa ini.</p>
+      </div>
+      <form class="formulir" method="post" action="{{ url_for('detail_mahasiswa', id_mahasiswa=mahasiswa.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="formulir__kelompok">
+          <label class="input-label" for="status-tindak-lanjut">Status tindak lanjut</label>
+          <select class="input-kontrol" id="status-tindak-lanjut" name="status" required>
+            {% for status in status_tindak_lanjut %}
+              <option value="{{ status }}" {% if mahasiswa.status_tindak_lanjut == status %}selected{% endif %}>{{ status }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="formulir__kelompok">
+          <label class="input-label" for="catatan-tindak-lanjut">Catatan</label>
+          <textarea class="input-kontrol" id="catatan-tindak-lanjut" name="catatan" rows="5" maxlength="4000">{{ mahasiswa.catatan_tindak_lanjut }}</textarea>
+          <small class="teks-bantuan">Maksimal 4000 karakter. Hindari mencatat informasi sensitif yang tidak diperlukan.</small>
+        </div>
+        {% if mahasiswa.diperbarui_pada %}
+          <p class="catatan-nilai-awal">Terakhir diperbarui {{ mahasiswa.diperbarui_pada }} oleh {{ mahasiswa.diperbarui_oleh }}.</p>
+        {% endif %}
+        <button class="tombol tombol--primer" type="submit">Simpan tindak lanjut</button>
+      </form>
+    </section>
+
+    <aside class="banner-hasil" role="note">
+      <span class="banner-hasil__ikon" aria-hidden="true">!</span>
+      <p class="banner-hasil__teks">Prediksi adalah indikator pendukung, bukan keputusan otomatis. Faktor model bukan bukti sebab-akibat.</p>
+    </aside>
+  </div>
+{% endblock %}

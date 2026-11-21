@@ -1,0 +1,7 @@
+Application mode,Application order,Course,Daytime/evening attendance,Previous qualification,Previous qualification (grade),Mother's qualification,Father's qualification,Mother's occupation,Father's occupation,Admission grade,Displaced,Educational special needs,Debtor,Tuition fees up to date,Scholarship holder,Age at enrollment,Curricular units 1st sem (credited),Curricular units 1st sem (enrolled),Curricular units 1st sem (evaluations),Curricular units 1st sem (approved),Curricular units 1st sem (grade),Curricular units 1st sem (without evaluations),Unemployment rate,Inflation rate,GDP,id_mahasiswa,nama_mahasiswa
+17,2,9991,1,2,168.9,30,31,152,192,140,0,0,0,1,1,19,0,6,8,6,14.5,0,14.7,3.6,1.9,DEMO-001,Mahasiswa Demo 01
+57,1,9991,1,43,165.4,11,43,8,131,126,0,0,0,1,0,20,0,6,8,4,12.5,0,8.4,0.9,0.5,DEMO-002,Mahasiswa Demo 02
+27,1,171,1,42,100.9,6,20,3,112,110,1,0,1,0,0,22,0,6,6,1,5.5,1,14.2,0.6,-2.6,DEMO-003,Mahasiswa Demo 03
+1,1,9003,1,42,111.1,10,14,153,153,105,1,0,1,0,0,24,0,5,5,0,0,3,12.2,2.0,0.4,DEMO-004,Mahasiswa Demo 04
+10,1,9070,1,43,96.4,37,4,90,183,130,0,0,0,1,0,21,0,6,8,3,9.5,0,13.0,1.5,0.2,DEMO-005,Mahasiswa Demo 05
+17,1,33,1,40,133.7,35,3,144,172,150,0,0,0,1,1,18,0,5,6,4,12,0,14.9,1.4,-3.1,DEMO-006,Mahasiswa Demo 06

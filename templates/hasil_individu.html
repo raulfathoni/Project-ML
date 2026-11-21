@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Prediksi Individu - EWS Akademik{% endblock %}
+
+{% block content %}
+  <div class="halaman-hasil">
+    <header class="halaman-kepala">
+      <p class="dashboard-header__label">Analisis mahasiswa</p>
+      <h1 class="judul-halaman">Hasil prediksi</h1>
+    </header>
+
+    <section class="kartu hasil-ringkasan" aria-labelledby="judul-ringkasan-hasil">
+      <div>
+        <h2 class="ringkasan-kartu__label" id="judul-ringkasan-hasil">Nilai prediksi semester 2</h2>
+        <p class="hasil-ringkasan__nilai">{{ "%.2f"|format(nilai_prediksi) }}</p>
+      </div>
+      {% if kategori == "Berisiko Tinggi" %}
+        <span class="badge-kategori badge-kategori--berisiko-tinggi">
+          <span class="badge-kategori__ikon" aria-hidden="true"></span>
+          Berisiko Tinggi
+        </span>
+      {% else %}
+        <span class="badge-kategori badge-kategori--normal">
+          <span class="badge-kategori__ikon" aria-hidden="true"></span>
+          Normal
+        </span>
+      {% endif %}
+    </section>
+
+    <aside class="banner-hasil" role="note">
+      <span class="banner-hasil__ikon" aria-hidden="true">!</span>
+      <p class="banner-hasil__teks">Hasil ini pendukung keputusan, bukan keputusan otomatis.</p>
+    </aside>
+
+    <section class="kartu hasil-bagian" aria-labelledby="judul-rekomendasi">
+      <h2 class="kartu__judul" id="judul-rekomendasi">Rekomendasi</h2>
+      <ul class="daftar-teks">
+        {% for saran in rekomendasi %}
+          <li>{{ saran }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    {% if peringatan %}
+      <section class="kartu hasil-bagian" aria-labelledby="judul-peringatan">
+        <h2 class="kartu__judul" id="judul-peringatan">Peringatan data</h2>
+        <ul class="daftar-peringatan">
+          {% for pesan in peringatan %}
+            <li>{{ pesan }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+
+    <p class="catatan-nilai-awal">{{ jumlah_nilai_awal }} field lanjutan memakai nilai awal.</p>
+    {% if id_profil %}
+      <a class="tombol tombol--sekunder" href="{{ url_for('detail_mahasiswa', id_mahasiswa=id_profil) }}">
+        Lihat profil dan tindak lanjut
+      </a>
+    {% endif %}
+    <a class="tombol tombol--sekunder" href="{{ url_for('individu') }}">Buat prediksi lain</a>
+  </div>
+{% endblock %}

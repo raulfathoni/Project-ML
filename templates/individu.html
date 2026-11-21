@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% macro bidang_formulir(bidang) -%}
+  <div class="formulir__kelompok">
+    <label class="input-label" for="{{ bidang.id }}">{{ bidang.label }}</label>
+    {% if bidang.jenis == "pilihan" %}
+      <select class="input-kontrol" id="{{ bidang.id }}" name="{{ bidang.nama }}" required>
+        <option value="">Pilih nilai</option>
+        {% for pilihan in bidang.pilihan %}
+          <option value="{{ pilihan.nilai }}" {% if bidang.nilai|string == pilihan.nilai|string %}selected{% endif %}>
+            {{ pilihan.label }}
+          </option>
+        {% endfor %}
+      </select>
+    {% else %}
+      <input
+        class="input-kontrol"
+        id="{{ bidang.id }}"
+        name="{{ bidang.nama }}"
+        type="number"
+        min="{{ bidang.min }}"
+        max="{{ bidang.max }}"
+        step="{{ bidang.langkah }}"
+        value="{{ bidang.nilai }}"
+        required>
+    {% endif %}
+    {% if bidang.bantuan %}
+      <small class="teks-bantuan">{{ bidang.bantuan }}</small>
+    {% endif %}
+  </div>
+{%- endmacro %}
+
+{% block title %}Prediksi Individu - EWS Akademik{% endblock %}
+
+{% block content %}
+  <div class="halaman-individu">
+    <header class="halaman-kepala">
+      <p class="dashboard-header__label">Analisis mahasiswa</p>
+      <h1 class="judul-halaman">Prediksi individu</h1>
+      <p>Isi data semester pertama untuk memperkirakan risiko akademik mahasiswa.</p>
+    </header>
+
+    <form class="formulir formulir-individu" method="post" action="{{ url_for('individu') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="formulir-individu__layout">
+        <div class="formulir-individu__konten">
+          <section class="kartu bagian-formulir" aria-labelledby="judul-data-utama">
+            <div class="bagian-formulir__kepala">
+              <div>
+                <h2 class="kartu__judul" id="judul-data-utama">Data akademik dan kondisi mahasiswa</h2>
+                <p>Isi indikator akademik semester pertama dan status mahasiswa.</p>
+              </div>
+            </div>
+            <div class="bidang-grid bidang-grid--utama">
+              {% for bidang in bidang_utama %}
+                {{ bidang_formulir(bidang) }}
+              {% endfor %}
+            </div>
+            <div class="formulir__kelompok id-mahasiswa">
+              <label class="input-label" for="nama-mahasiswa">Nama mahasiswa</label>
+              <input
+                class="input-kontrol"
+                id="nama-mahasiswa"
+                name="nama_mahasiswa"
+                type="text"
+                value="{{ nama_mahasiswa }}"
+                maxlength="160"
+                autocomplete="off">
+              <label class="input-label" for="id-mahasiswa">ID mahasiswa</label>
+              <input
+                class="input-kontrol"
+                id="id-mahasiswa"
+                name="id_mahasiswa"
+                type="text"
+                value="{{ id_mahasiswa }}"
+                maxlength="120"
+                autocomplete="off">
+              <small class="teks-bantuan">Nama dan ID bersifat opsional, tetapi harus diisi bersama agar profil dapat dipantau.</small>
+            </div>
+          </section>
+
+          <details class="kartu data-lanjutan" {% if buka_lanjutan %}open{% endif %}>
+            <summary class="data-lanjutan__judul">
+              <span>
+                <strong>Data lanjutan</strong>
+                <small>17 fitur; nilai awal mengikuti statistik data latih.</small>
+              </span>
+              <span class="data-lanjutan__ikon" aria-hidden="true">+</span>
+            </summary>
+            <div class="bidang-grid bidang-grid--lanjutan">
+              {% for bidang in bidang_lanjutan %}
+                {{ bidang_formulir(bidang) }}
+              {% endfor %}
+            </div>
+          </details>
+
+          <div class="formulir-individu__aksi">
+            <button class="tombol tombol--primer" type="submit">Jalankan prediksi</button>
+          </div>
+        </div>
+
+        <aside class="kartu ringkasan-formulir" aria-label="Ringkasan prediksi">
+          <p class="dashboard-header__label">Model penelitian</p>
+          <h2 class="kartu__judul">Prediksi individu</h2>
+          <p>Lengkapi data semester pertama untuk memperkirakan nilai akademik semester berikutnya.</p>
+          <dl class="ringkasan-formulir__daftar">
+            <div><dt>Fitur model</dt><dd>{{ bidang_utama|length + bidang_lanjutan|length }}</dd></div>
+            <div><dt>Input utama</dt><dd>{{ bidang_utama|length }}</dd></div>
+            <div><dt>Input lanjutan</dt><dd>{{ bidang_lanjutan|length }}</dd></div>
+            <div><dt>Versi model</dt><dd>{{ versi_model }}</dd></div>
+          </dl>
+          <p class="ringkasan-formulir__catatan">Hasil prediksi merupakan indikator pendukung, bukan keputusan otomatis. Pastikan data sudah benar sebelum diproses.</p>
+        </aside>
+      </div>
+    </form>
+  </div>
+{% endblock %}

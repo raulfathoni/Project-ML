@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Unggah Data CSV - EWS Akademik{% endblock %}
+
+{% block content %}
+  <div class="halaman-unggah">
+    <header class="halaman-kepala">
+      <p class="dashboard-header__label">Analisis mahasiswa</p>
+      <h1 class="judul-halaman">Unggah data CSV</h1>
+      <p>Unggah data semester pertama untuk memproses prediksi secara berkelompok.</p>
+    </header>
+
+    <ol class="alur-unggah" aria-label="Tahapan pemrosesan CSV">
+      <li class="alur-unggah__langkah {% if hasil is defined %}alur-unggah__langkah--selesai{% else %}alur-unggah__langkah--aktif{% endif %}">
+        <span>1</span> Unggah berkas
+      </li>
+      <li class="alur-unggah__langkah {% if hasil is defined %}alur-unggah__langkah--selesai{% endif %}">
+        <span>2</span> Validasi data
+      </li>
+      <li class="alur-unggah__langkah {% if hasil is defined %}alur-unggah__langkah--aktif{% endif %}">
+        <span>3</span> Tinjau hasil
+      </li>
+    </ol>
+
+    <section class="kartu kartu-unggah" aria-labelledby="judul-unggah">
+      <div class="kartu-unggah__kepala">
+        <div>
+          <h2 class="kartu__judul" id="judul-unggah">Berkas data mahasiswa</h2>
+          <p>Gunakan template agar nama kolom sesuai dengan model. Nama dan ID mahasiswa bersifat opsional, tetapi wajib diisi bersama agar profil dapat dipantau.</p>
+        </div>
+        <a class="tombol tombol--sekunder" href="{{ url_for('unduh_template') }}">
+          Unduh template CSV
+        </a>
+      </div>
+
+      <form class="formulir formulir-unggah" method="post" action="{{ url_for('unggah') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="area-unggah">
+          <label class="input-label" for="berkas-csv">Pilih berkas CSV</label>
+          <input
+            class="input-kontrol"
+            id="berkas-csv"
+            name="berkas"
+            type="file"
+            accept=".csv,text/csv"
+            required>
+          <small class="teks-bantuan">Format .csv, maksimal 2 MB dan 2000 baris data.</small>
+        </div>
+        <button class="tombol tombol--primer" type="submit">Proses data</button>
+      </form>
+    </section>
+
+    {% if hasil is defined %}
+      <section class="bagian-hasil-unggah" aria-labelledby="judul-hasil-unggah">
+        <div class="bagian-hasil-unggah__kepala">
+          <div>
+            <h2 id="judul-hasil-unggah">Hasil pemrosesan</h2>
+            <p>{{ jumlah_baris }} baris diproses.</p>
+          </div>
+          <a class="tombol tombol--sekunder" href="{{ url_for('unduh') }}">Unduh hasil CSV</a>
+        </div>
+
+        <section class="ringkasan-grid ringkasan-hasil-csv" aria-label="Ringkasan kategori hasil">
+          <article class="ringkasan-kartu">
+            <h3 class="ringkasan-kartu__label">Total diproses</h3>
+            <p class="ringkasan-kartu__nilai">{{ jumlah_baris }}</p>
+          </article>
+          <article class="ringkasan-kartu ringkasan-kartu--risiko">
+            <h3 class="ringkasan-kartu__label">Berisiko tinggi</h3>
+            <p class="ringkasan-kartu__nilai">{{ jumlah_tinggi }}</p>
+          </article>
+          <article class="ringkasan-kartu ringkasan-kartu--normal">
+            <h3 class="ringkasan-kartu__label">Normal</h3>
+            <p class="ringkasan-kartu__nilai">{{ jumlah_normal }}</p>
+          </article>
+        </section>
+
+        {% if peringatan %}
+          <div class="peringatan-unggah" role="status">
+            <h3>Peringatan data</h3>
+            <ul class="daftar-peringatan">
+              {% for pesan in peringatan %}
+                <li>{{ pesan }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <aside class="banner-hasil" role="note">
+          <span class="banner-hasil__ikon" aria-hidden="true">!</span>
+          <p class="banner-hasil__teks">Hasil ini pendukung keputusan, bukan keputusan otomatis.</p>
+        </aside>
+
+        <div class="filter-hasil">
+          <label class="input-label" for="filter-kategori">Filter kategori</label>
+          <select class="input-kontrol" id="filter-kategori">
+            <option value="">Semua kategori</option>
+            <option value="Berisiko Tinggi">Berisiko Tinggi</option>
+            <option value="Normal">Normal</option>
+          </select>
+        </div>
+
+        <div class="tabel-bungkus">
+          <table class="tabel-data tabel-hasil">
+            <thead>
+              <tr>
+                <th scope="col">Peringkat</th>
+                <th scope="col">Nama</th>
+                <th scope="col">ID / baris</th>
+                <th scope="col">Nilai prediksi</th>
+                <th scope="col">Kategori</th>
+                <th scope="col">Faktor utama</th>
+              </tr>
+            </thead>
+            <tbody id="baris-hasil">
+              {% for item in hasil %}
+                <tr data-kategori="{{ item.kategori }}">
+                  <td>{{ item.peringkat }}</td>
+                  <td>{{ item.nama or "Nama tidak dicantumkan" }}</td>
+                  <td>{{ item.id }}</td>
+                  <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
+                  <td>
+                    {% if item.kategori == "Berisiko Tinggi" %}
+                      <span class="badge-kategori badge-kategori--berisiko-tinggi">
+                        <span class="badge-kategori__ikon" aria-hidden="true"></span>
+                        Berisiko Tinggi
+                      </span>
+                    {% else %}
+                      <span class="badge-kategori badge-kategori--normal">
+                        <span class="badge-kategori__ikon" aria-hidden="true"></span>
+                        Normal
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td>{{ item.faktor_utama or "Tidak tersedia" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    {% endif %}
+  </div>
+
+  {% if hasil is defined %}
+    <script>
+      const filterKategori = document.getElementById("filter-kategori");
+      const barisHasil = document.querySelectorAll("#baris-hasil tr");
+      filterKategori.addEventListener("change", () => {
+        barisHasil.forEach((baris) => {
+          baris.hidden = filterKategori.value !== "" &&
+            baris.dataset.kategori !== filterKategori.value;
+        });
+      });
+    </script>
+  {% endif %}
+{% endblock %}

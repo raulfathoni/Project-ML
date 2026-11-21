@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Mahasiswa - EWS Akademik{% endblock %}
+
+{% block content %}
+  <div class="halaman-mahasiswa">
+    <header class="dashboard-header">
+      <div>
+        <p class="dashboard-header__label">Ruang akademik</p>
+        <h1 class="judul-halaman">Mahasiswa</h1>
+        <p class="dashboard-header__deskripsi">Pantau hasil prediksi terakhir dan tindak lanjut pendampingan.</p>
+      </div>
+      <a class="tombol tombol--primer" href="{{ url_for('individu') }}">Prediksi individu</a>
+    </header>
+
+    <section class="kartu" aria-labelledby="judul-filter-mahasiswa">
+      <h2 class="kartu__judul" id="judul-filter-mahasiswa">Cari dan filter mahasiswa</h2>
+      <form class="filter-mahasiswa" method="get" action="{{ url_for('mahasiswa') }}">
+        <div class="formulir__kelompok">
+          <label class="input-label" for="cari-mahasiswa">Nama atau ID mahasiswa</label>
+          <input class="input-kontrol" id="cari-mahasiswa" name="q" value="{{ pencarian }}" maxlength="160">
+        </div>
+        <div class="formulir__kelompok">
+          <label class="input-label" for="filter-kategori-mahasiswa">Kategori risiko</label>
+          <select class="input-kontrol" id="filter-kategori-mahasiswa" name="kategori">
+            <option value="" {% if not filter_kategori %}selected{% endif %}>Semua kategori</option>
+            <option value="Berisiko Tinggi" {% if filter_kategori == "Berisiko Tinggi" %}selected{% endif %}>Berisiko Tinggi</option>
+            <option value="Normal" {% if filter_kategori == "Normal" %}selected{% endif %}>Normal</option>
+          </select>
+        </div>
+        <div class="formulir__kelompok">
+          <label class="input-label" for="filter-status-mahasiswa">Tindak lanjut</label>
+          <select class="input-kontrol" id="filter-status-mahasiswa" name="status">
+            <option value="" {% if not filter_status %}selected{% endif %}>Semua status</option>
+            <option value="aktif" {% if filter_status == "aktif" %}selected{% endif %}>Belum selesai</option>
+            {% for status in status_tindak_lanjut %}
+              <option value="{{ status }}" {% if filter_status == status %}selected{% endif %}>{{ status }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="filter-mahasiswa__aksi">
+          <button class="tombol tombol--primer" type="submit">Terapkan</button>
+          <a class="tombol tombol--sekunder" href="{{ url_for('mahasiswa') }}">Hapus filter</a>
+        </div>
+      </form>
+    </section>
+
+    <section class="kartu prioritas-mahasiswa" aria-labelledby="judul-daftar-mahasiswa">
+      <div class="bagian-dashboard__kepala prioritas-mahasiswa__kepala">
+        <div>
+          <h2 id="judul-daftar-mahasiswa">Daftar pemantauan</h2>
+          <p>{{ jumlah_mahasiswa }} mahasiswa dengan profil dan hasil prediksi tersimpan.</p>
+        </div>
+      </div>
+      {% if mahasiswa %}
+        <div class="tabel-bungkus">
+          <table class="tabel-data">
+            <thead>
+              <tr>
+                <th scope="col">Mahasiswa</th>
+                <th scope="col">ID</th>
+                <th scope="col">Prediksi semester 2</th>
+                <th scope="col">Kategori risiko</th>
+                <th scope="col">Tindak lanjut</th>
+                <th scope="col">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in mahasiswa %}
+                <tr>
+                  <td>{{ item.nama or "Nama belum diisi" }}</td>
+                  <td>{{ item.id_mahasiswa }}</td>
+                  <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
+                  <td>
+                    {% if item.kategori == "Berisiko Tinggi" %}
+                      <span class="badge-kategori badge-kategori--berisiko-tinggi">Berisiko Tinggi</span>
+                    {% else %}
+                      <span class="badge-kategori badge-kategori--normal">Normal</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ item.status_tindak_lanjut }}</td>
+                  <td><a href="{{ url_for('detail_mahasiswa', id_mahasiswa=item.id) }}">Detail</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if jumlah_halaman > 1 %}
+          <nav class="paginasi-riwayat" aria-label="Paginasi mahasiswa">
+            {% if halaman > 1 %}
+              <a class="tombol tombol--sekunder"
+                 href="{{ url_for('mahasiswa', kategori=filter_kategori or None, status=filter_status or None, q=pencarian or None, halaman=halaman - 1) }}">Sebelumnya</a>
+            {% else %}
+              <span class="tombol tombol--sekunder tombol--nonaktif" aria-disabled="true">Sebelumnya</span>
+            {% endif %}
+            <span class="paginasi-riwayat__status">Halaman {{ halaman }} dari {{ jumlah_halaman }}</span>
+            {% if halaman < jumlah_halaman %}
+              <a class="tombol tombol--sekunder"
+                 href="{{ url_for('mahasiswa', kategori=filter_kategori or None, status=filter_status or None, q=pencarian or None, halaman=halaman + 1) }}">Berikutnya</a>
+            {% else %}
+              <span class="tombol tombol--sekunder tombol--nonaktif" aria-disabled="true">Berikutnya</span>
+            {% endif %}
+          </nav>
+        {% endif %}
+      {% else %}
+        <div class="keadaan-kosong" role="status">
+          <h3>Belum ada mahasiswa yang cocok</h3>
+          <p>Profil tersimpan setelah prediksi dibuat dengan nama dan ID mahasiswa.</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}
