@@ -589,6 +589,14 @@ def create_app(config=None):
         if filter_sumber not in ("", "formulir", "csv"):
             flash("Filter sumber tidak valid.", "warning")
             filter_sumber = ""
+        if session["peran"] == "staf_akademik":
+            if filter_sumber == "formulir":
+                flash("Riwayat staf akademik hanya menampilkan hasil CSV.", "warning")
+            filter_sumber = "csv"
+        elif session["peran"] == "dosen_wali":
+            if filter_sumber == "csv":
+                flash("Riwayat dosen wali hanya menampilkan prediksi formulir.", "warning")
+            filter_sumber = "formulir"
 
         try:
             halaman = int(request.args.get("halaman", "1"))

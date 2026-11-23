@@ -24,9 +24,11 @@
         <div class="formulir__kelompok">
           <label class="input-label" for="filter-sumber-riwayat">Sumber</label>
           <select class="input-kontrol" id="filter-sumber-riwayat" name="sumber">
-            <option value="" {% if not filter_sumber %}selected{% endif %}>Semua sumber</option>
-            <option value="formulir" {% if filter_sumber == "formulir" %}selected{% endif %}>Formulir individu</option>
-            <option value="csv" {% if filter_sumber == "csv" %}selected{% endif %}>CSV</option>
+            {% if session.get('peran') == 'staf_akademik' %}
+              <option value="csv" selected>CSV</option>
+            {% elif session.get('peran') == 'dosen_wali' %}
+              <option value="formulir" selected>Formulir individu</option>
+            {% endif %}
           </select>
         </div>
         <div class="filter-riwayat__aksi">
@@ -105,7 +107,7 @@
             {% endif %}
           </nav>
         {% endif %}
-      {% elif filter_kategori or filter_sumber %}
+      {% elif filter_kategori %}
         <div class="keadaan-kosong" role="status">
           <h3>Tidak ada hasil yang cocok</h3>
           <p>Coba ubah kategori atau sumber, atau hapus filter untuk melihat semua riwayat.</p>
