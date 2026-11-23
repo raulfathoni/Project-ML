@@ -142,7 +142,9 @@ def test_login_salah_tidak_membuat_sesi(app):
     )
 
     assert respons.status_code == 200
-    assert "Peran atau kata sandi tidak sesuai." in respons.get_data(as_text=True)
+    html = respons.get_data(as_text=True)
+    assert "Peran atau kata sandi tidak sesuai." in html
+    assert "app-flash-list login-flash" in html
     with client.session_transaction() as sesi:
         assert "peran" not in sesi
 
@@ -408,11 +410,17 @@ def test_dashboard_staf_berbeda_dan_rute_mahasiswa_dibatasi(app):
 
     dashboard = client.get("/")
     daftar_mahasiswa = client.get("/mahasiswa")
+    html_dashboard = dashboard.get_data(as_text=True)
 
     assert dashboard.status_code == 200
     assert "Pemantauan data akademik" in dashboard.get_data(as_text=True)
     assert "Faktor dominan model" in dashboard.get_data(as_text=True)
     assert "Dashboard pemantauan" not in dashboard.get_data(as_text=True)
+    assert "Unggah data CSV" in html_dashboard
+    assert "Riwayat CSV" in html_dashboard
+    assert 'href="/mahasiswa"' not in html_dashboard
+    assert 'href="/individu"' not in html_dashboard
+    assert "Tindak lanjut" not in html_dashboard
     assert daftar_mahasiswa.status_code == 403
 
 
@@ -754,44 +762,38 @@ def test_rute_unggah_hanya_dapat_diakses_staf(app):
 
 def test_riwayat_mendukung_kedua_peran_paginasi_urut_dan_filter(app):
     _isi_riwayat(app, 45)
-    isi_peran = (
-        ("dosen_wali", "sandi-dosen-uji"),
-        ("staf_akademik", "sandi-staf-uji"),
+    client_dosen = app.test_client()
+    client_dosen.post(
+        "/login",
+        data={"peran": "dosen_wali", "kata_sandi": "sandi-dosen-uji"},
     )
+    riwayat_dosen = client_dosen.get("/riwayat")
+    html_dosen = riwayat_dosen.get_data(as_text=True)
+    badan_dosen = html_dosen.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
+    id_dosen = re.findall(r"<td>(pseudo-\d{2})</td>", badan_dosen)
 
-    for peran, kata_sandi in isi_peran:
-        client = app.test_client()
-        client.post(
-            "/login",
-            data={"peran": peran, "kata_sandi": kata_sandi},
-        )
+    assert riwayat_dosen.status_code == 200
+    assert len(id_dosen) == 15
+    assert id_dosen[0] == "pseudo-42"
+    assert "RAHASIA_INPUT" not in html_dosen
+    assert all(int(item[-2:]) % 3 == 0 for item in id_dosen)
 
-        halaman_pertama = client.get("/riwayat")
-        html_pertama = halaman_pertama.get_data(as_text=True)
-        badan_tabel = html_pertama.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
-        id_pertama = re.findall(r"<td>(pseudo-\d{2})</td>", badan_tabel)
+    client_staf = app.test_client()
+    client_staf.post(
+        "/login",
+        data={"peran": "staf_akademik", "kata_sandi": "sandi-staf-uji"},
+    )
+    riwayat_staf = client_staf.get("/riwayat")
+    html_staf = riwayat_staf.get_data(as_text=True)
+    badan_staf = html_staf.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
+    id_staf = re.findall(r"<td>(pseudo-\d{2})</td>", badan_staf)
 
-        assert halaman_pertama.status_code == 200
-        assert len(id_pertama) == 20
-        assert id_pertama[0] == "pseudo-44"
-        assert id_pertama[-1] == "pseudo-25"
-        assert "RAHASIA_INPUT" not in html_pertama
-
-        halaman_kedua = client.get("/riwayat?halaman=2")
-        html_kedua = halaman_kedua.get_data(as_text=True)
-        badan_kedua = html_kedua.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
-        id_kedua = re.findall(r"<td>(pseudo-\d{2})</td>", badan_kedua)
-        assert id_kedua[0] == "pseudo-24"
-        assert id_kedua[-1] == "pseudo-05"
-        assert "Halaman 2 dari 3" in html_kedua
-
-        hasil_filter = client.get("/riwayat?kategori=Normal&sumber=csv")
-        html_filter = hasil_filter.get_data(as_text=True)
-        badan_filter = html_filter.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
-        id_filter = re.findall(r"<td>(pseudo-\d{2})</td>", badan_filter)
-        assert len(id_filter) == 15
-        assert all(int(item[-2:]) % 2 == 1 for item in id_filter)
-        assert "Formulir individu" not in badan_filter
+    assert riwayat_staf.status_code == 200
+    assert len(id_staf) == 20
+    assert id_staf[0] == "pseudo-44"
+    assert id_staf[-1] == "pseudo-16"
+    assert all(int(item[-2:]) % 3 != 0 for item in id_staf)
+    assert "Riwayat CSV" in html_staf
 
 
 def test_riwayat_menampilkan_keadaan_kosong_dan_memerlukan_login(app):

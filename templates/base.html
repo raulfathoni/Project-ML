@@ -12,7 +12,13 @@
     {% if request.endpoint != 'login' %}
       <nav class="navbar app-navbar">
         <div class="container app-container app-navbar__inner">
-          <a class="navbar-brand app-navbar__brand" href="{{ url_for('beranda') }}">EWS Akademik</a>
+          <a class="navbar-brand app-navbar__brand" href="{{ url_for('beranda') }}">
+            <span class="app-navbar__logo" aria-hidden="true">E</span>
+            <span class="app-navbar__wordmark">
+              <strong>EWS</strong>
+              <small>Early Warning System</small>
+            </span>
+          </a>
           <div class="app-navbar__actions">
             {% if session.get('peran') == 'dosen_wali' %}
               <a class="app-navbar__link" href="{{ url_for('beranda') }}">Dashboard</a>
@@ -26,7 +32,7 @@
               <a class="app-navbar__link" href="{{ url_for('beranda') }}">Dashboard</a>
               <a class="app-navbar__link" href="{{ url_for('unggah') }}">Unggah data CSV</a>
               <a class="app-navbar__link" href="{{ url_for('beranda') }}#informasi-model">Informasi model</a>
-              <a class="app-navbar__link" href="{{ url_for('riwayat') }}">Riwayat</a>
+              <a class="app-navbar__link" href="{{ url_for('riwayat', sumber='csv') }}">Riwayat CSV</a>
               <span class="navbar-text app-navbar__role">Staf Akademik</span>
             {% endif %}
             {% if session.get('peran') %}
@@ -43,7 +49,7 @@
     <main class="{% if request.endpoint == 'login' %}login-main{% else %}container app-container app-main{% endif %}">
       {% with pesan = get_flashed_messages(with_categories=true) %}
         {% if pesan %}
-          <div class="app-flash-list" aria-live="polite">
+          <div class="app-flash-list{% if request.endpoint == 'login' %} login-flash{% endif %}" aria-live="polite">
             {% for kategori, isi in pesan %}
               {% set jenis_pesan = {'success': 'sukses', 'danger': 'galat', 'warning': 'peringatan'}.get(kategori, 'peringatan') %}
               <div class="alert flash-message flash-message--{{ jenis_pesan }}" role="alert">

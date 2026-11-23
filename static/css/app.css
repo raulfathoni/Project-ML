@@ -1499,6 +1499,276 @@ p {
   .bidang-grid--lanjutan {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* Tampilan dashboard mengikuti susunan pemantauan */
+.app-navbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--jarak-3);
+  margin-block-end: var(--jarak-0);
+  text-decoration: none;
+}
+
+.app-navbar__logo {
+  display: grid;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  background: var(--warna-permukaan-gelap);
+  border-radius: 50%;
+  color: var(--warna-teks-terang);
+  font-size: var(--ukuran-teks-12);
+  font-weight: var(--ketebalan-teks-tebal);
+}
+
+.app-navbar__wordmark {
+  display: grid;
+  line-height: 1.05;
+}
+
+.app-navbar__wordmark strong {
+  font-size: var(--ukuran-teks-18);
+}
+
+.app-navbar__wordmark small {
+  margin-block-start: var(--jarak-1);
+  color: var(--warna-teks-redup);
+  font-size: var(--ukuran-teks-9);
+}
+
+.dashboard-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--jarak-2);
+  margin-block-end: calc(-1 * var(--jarak-4));
+  color: var(--warna-teks-redup);
+  font-size: var(--ukuran-teks-12);
+}
+
+.dashboard-breadcrumb strong {
+  color: var(--warna-teks);
+  font-weight: var(--ketebalan-teks-sedang);
+}
+
+.dashboard-header__aksi {
+  display: flex;
+  align-items: center;
+  gap: var(--jarak-3);
+}
+
+.dashboard > .dashboard-header,
+.dashboard-staf > .dashboard-header {
+  margin-inline: calc(-1 * var(--jarak-6));
+  margin-block-start: var(--jarak-0);
+  padding-inline: var(--jarak-6);
+  padding-block: var(--jarak-7);
+  background: var(--warna-permukaan-gelap);
+  border-radius: var(--lebar-garis-nol);
+  color: var(--warna-teks-terang);
+}
+
+.dashboard > .dashboard-header .judul-halaman,
+.dashboard-staf > .dashboard-header .judul-halaman {
+  margin-block-end: var(--jarak-2);
+  color: var(--warna-teks-terang);
+  font-size: var(--ukuran-teks-32);
+}
+
+.dashboard > .dashboard-header .dashboard-header__deskripsi,
+.dashboard-staf > .dashboard-header .dashboard-header__deskripsi {
+  color: var(--warna-teks-pucat);
+}
+
+.dashboard-header__aksi .tombol--primer {
+  min-width: 9rem;
+}
+
+.banner-hasil--dashboard {
+  margin-block-start: calc(-1 * var(--jarak-4));
+  background: var(--warna-permukaan);
+  border-color: var(--warna-garis-halus);
+  border-inline-start-color: var(--warna-garis-putus);
+  color: var(--warna-teks-sekunder);
+}
+
+.ringkasan-kartu__kepala {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--jarak-3);
+}
+
+.ringkasan-kartu__ikon {
+  display: grid;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  background: var(--warna-latar-ikon-netral);
+  border-radius: 50%;
+  color: var(--warna-teks-sekunder);
+  font-size: var(--ukuran-teks-13);
+}
+
+.ringkasan-kartu--risiko .ringkasan-kartu__ikon {
+  background: var(--latar-bahaya-lencana);
+  color: var(--warna-bahaya);
+}
+
+.ringkasan-kartu--normal .ringkasan-kartu__ikon {
+  background: var(--latar-aman-validasi);
+  color: var(--warna-aman);
+}
+
+.ringkasan-kartu__keterangan {
+  margin-block-start: var(--jarak-2);
+  margin-block-end: var(--jarak-0);
+  color: var(--warna-teks-redup);
+  font-size: var(--ukuran-teks-11);
+}
+
+.dashboard-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.95fr) minmax(14rem, 0.9fr);
+  gap: var(--jarak-4);
+}
+
+.distribusi-risiko__nilai {
+  display: flex;
+  align-items: baseline;
+  gap: var(--jarak-3);
+}
+
+.distribusi-risiko__nilai strong {
+  font-size: var(--ukuran-teks-32);
+  line-height: 1;
+}
+
+.distribusi-risiko__nilai span {
+  color: var(--warna-teks-redup);
+  font-size: var(--ukuran-teks-12);
+}
+
+.model-panel {
+  display: grid;
+  align-content: start;
+  gap: var(--jarak-3);
+  padding: var(--jarak-6);
+  background: var(--warna-permukaan-gelap);
+  border-radius: var(--sudut-8);
+  color: var(--warna-teks-terang);
+}
+
+.model-panel__label,
+.model-panel h2,
+.model-panel p,
+.model-panel dd,
+.model-panel dt,
+.model-panel a {
+  color: var(--warna-teks-terang);
+}
+
+.model-panel__label {
+  font-size: var(--ukuran-teks-10);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.model-panel h2 {
+  margin-block-end: var(--jarak-0);
+  font-size: var(--ukuran-teks-18);
+}
+
+.model-panel p {
+  margin-block-end: var(--jarak-2);
+  color: var(--warna-teks-pucat);
+  font-size: var(--ukuran-teks-11);
+}
+
+.model-panel dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--jarak-2);
+  margin: var(--jarak-2) var(--jarak-0);
+}
+
+.model-panel dd {
+  margin: var(--jarak-0);
+  font-size: var(--ukuran-teks-18);
+  font-weight: var(--ketebalan-teks-semi-tebal);
+}
+
+.model-panel dt {
+  color: var(--warna-teks-pucat);
+  font-size: var(--ukuran-teks-9);
+}
+
+.model-panel a {
+  width: fit-content;
+  font-size: var(--ukuran-teks-11);
+  text-decoration: none;
+}
+
+.prioritas-mahasiswa__pencarian {
+  width: min(16rem, 100%);
+}
+
+.prioritas-mahasiswa__aksi {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--jarak-3);
+}
+
+@media (max-width: 768px) {
+  .dashboard > .dashboard-header,
+  .dashboard-staf > .dashboard-header {
+    margin-inline: calc(-1 * var(--jarak-5));
+  }
+
+  .dashboard-panel-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-header__aksi {
+    flex-wrap: wrap;
+  }
+
+  .prioritas-mahasiswa__pencarian {
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .dashboard-breadcrumb {
+    margin-block-end: calc(-1 * var(--jarak-3));
+  }
+
+  .dashboard > .dashboard-header,
+  .dashboard-staf > .dashboard-header {
+    margin-inline: calc(-1 * var(--jarak-4));
+    padding-inline: var(--jarak-4);
+  }
+
+  .dashboard > .dashboard-header .judul-halaman,
+  .dashboard-staf > .dashboard-header .judul-halaman {
+    font-size: var(--ukuran-teks-26);
+  }
+
+  .dashboard-header__aksi,
+  .prioritas-mahasiswa__aksi {
+    width: 100%;
+  }
+
+  .dashboard-header__aksi .tombol,
+  .prioritas-mahasiswa__aksi .tombol {
+    flex: 1;
+  }
+
+  .model-panel dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
   .hasil-ringkasan {
     align-items: flex-start;

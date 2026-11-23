@@ -3,52 +3,100 @@
 {% block title %}Beranda - EWS Akademik{% endblock %}
 
 {% block content %}
+  {% set total_terpantau = ringkasan_mahasiswa.total %}
+  {% set persen_berisiko = (ringkasan_mahasiswa.berisiko_tinggi * 100 / total_terpantau) if total_terpantau else 0 %}
+  {% set persen_normal = (ringkasan_mahasiswa.normal * 100 / total_terpantau) if total_terpantau else 0 %}
   <div class="dashboard">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <span>Ruang dosen wali</span>
+      <span aria-hidden="true">›</span>
+      <strong>Dashboard</strong>
+    </nav>
+
     <header class="dashboard-header">
       <div>
-        <p class="dashboard-header__label">Sistem Peringatan Dini Akademik</p>
         <h1 class="judul-halaman">Dashboard pemantauan</h1>
         <p class="dashboard-header__deskripsi">Kenali risiko lebih awal, hadirkan pendampingan yang tepat.</p>
       </div>
-      <a class="tombol tombol--primer" href="{{ url_for('individu') }}">Prediksi baru</a>
+      <div class="dashboard-header__aksi">
+        <a class="tombol tombol--sekunder" href="{{ url_for('riwayat') }}">Riwayat</a>
+        <a class="tombol tombol--primer" href="{{ url_for('individu') }}"><span aria-hidden="true">＋</span> Prediksi baru</a>
+      </div>
     </header>
+
+    <aside class="banner-hasil banner-hasil--dashboard" role="note">
+      <span class="banner-hasil__ikon" aria-hidden="true">ⓘ</span>
+      <p class="banner-hasil__teks">Hasil ini pendukung keputusan, bukan keputusan otomatis.</p>
+    </aside>
 
     <section class="ringkasan-grid" aria-label="Ringkasan mahasiswa">
       <article class="ringkasan-kartu">
-        <h2 class="ringkasan-kartu__label">Mahasiswa terpantau</h2>
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Total mahasiswa</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">♙</span>
+        </div>
         <p class="ringkasan-kartu__nilai">{{ ringkasan_mahasiswa.total }}</p>
+        <p class="ringkasan-kartu__keterangan">Mahasiswa dalam pemantauan</p>
       </article>
       <article class="ringkasan-kartu ringkasan-kartu--risiko">
-        <h2 class="ringkasan-kartu__label">Berisiko tinggi</h2>
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Berisiko Tinggi</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">△</span>
+        </div>
         <p class="ringkasan-kartu__nilai">{{ ringkasan_mahasiswa.berisiko_tinggi }}</p>
+        <p class="ringkasan-kartu__keterangan">{{ "%.0f"|format(persen_berisiko) }}% dari total mahasiswa</p>
       </article>
       <article class="ringkasan-kartu ringkasan-kartu--normal">
-        <h2 class="ringkasan-kartu__label">Normal</h2>
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Normal</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">◷</span>
+        </div>
         <p class="ringkasan-kartu__nilai">{{ ringkasan_mahasiswa.normal }}</p>
+        <p class="ringkasan-kartu__keterangan">{{ "%.0f"|format(persen_normal) }}% dari total mahasiswa</p>
       </article>
       <article class="ringkasan-kartu">
-        <h2 class="ringkasan-kartu__label">Model yang digunakan</h2>
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Model digunakan</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">◎</span>
+        </div>
         <p class="ringkasan-kartu__nilai ringkasan-kartu__nilai--tanggal">{{ versi_model }}</p>
+        <p class="ringkasan-kartu__keterangan">Random Forest Regressor</p>
       </article>
     </section>
 
-    {% set total_terpantau = ringkasan_mahasiswa.total %}
-    {% set persen_berisiko = (ringkasan_mahasiswa.berisiko_tinggi * 100 / total_terpantau) if total_terpantau else 0 %}
-    {% set persen_normal = (ringkasan_mahasiswa.normal * 100 / total_terpantau) if total_terpantau else 0 %}
-    <section class="kartu distribusi-risiko" aria-labelledby="judul-distribusi-risiko">
-      <div>
-        <h2 class="kartu__judul" id="judul-distribusi-risiko">Peta risiko mahasiswa</h2>
-        <p>Distribusi berdasarkan prediksi terakhir untuk {{ total_terpantau }} profil tersimpan.</p>
-      </div>
-      <div class="distribusi-risiko__bar" role="img" aria-label="{{ ringkasan_mahasiswa.berisiko_tinggi }} berisiko tinggi, {{ ringkasan_mahasiswa.normal }} normal">
-        <span class="distribusi-risiko__tinggi" style="width: {{ persen_berisiko }}%"></span>
-        <span class="distribusi-risiko__normal" style="width: {{ persen_normal }}%"></span>
-      </div>
-      <div class="distribusi-risiko__legenda">
-        <span><i class="distribusi-risiko__titik distribusi-risiko__titik--tinggi"></i> Berisiko tinggi: {{ ringkasan_mahasiswa.berisiko_tinggi }}</span>
-        <span><i class="distribusi-risiko__titik distribusi-risiko__titik--normal"></i> Normal: {{ ringkasan_mahasiswa.normal }}</span>
-      </div>
-    </section>
+    <div class="dashboard-panel-grid">
+      <section class="kartu distribusi-risiko" aria-labelledby="judul-distribusi-risiko">
+        <div>
+          <h2 class="kartu__judul" id="judul-distribusi-risiko">Peta risiko mahasiswa</h2>
+          <p>Distribusi berdasarkan prediksi terakhir untuk {{ total_terpantau }} profil tersimpan.</p>
+        </div>
+        <div class="distribusi-risiko__nilai">
+          <strong>{{ "%.0f"|format(persen_berisiko) }}%</strong>
+          <span>mahasiswa berisiko tinggi</span>
+        </div>
+        <div class="distribusi-risiko__bar" role="img" aria-label="{{ ringkasan_mahasiswa.berisiko_tinggi }} berisiko tinggi, {{ ringkasan_mahasiswa.normal }} normal">
+          <span class="distribusi-risiko__tinggi" style="width: {{ persen_berisiko }}%"></span>
+          <span class="distribusi-risiko__normal" style="width: {{ persen_normal }}%"></span>
+        </div>
+        <div class="distribusi-risiko__legenda">
+          <span><i class="distribusi-risiko__titik distribusi-risiko__titik--tinggi"></i> Berisiko Tinggi: {{ ringkasan_mahasiswa.berisiko_tinggi }}</span>
+          <span><i class="distribusi-risiko__titik distribusi-risiko__titik--normal"></i> Normal: {{ ringkasan_mahasiswa.normal }}</span>
+        </div>
+      </section>
+
+      <aside class="model-panel" aria-label="Ringkasan model">
+        <span class="model-panel__label">Model pembelajaran</span>
+        <h2>Random Forest Regressor</h2>
+        <p>Scenario 8 × 25 fitur × hasil sementara</p>
+        <dl>
+          <div><dd>{{ jumlah_fitur }}</dd><dt>Jumlah fitur</dt></div>
+          <div><dd>{{ total_terpantau }}</dd><dt>Profil tersimpan</dt></div>
+          <div><dd>&lt; {{ "%.1f"|format(ambang_risiko) }}</dd><dt>Ambang risiko</dt></div>
+        </dl>
+        <p>Tanggal pelatihan: {{ tanggal_pelatihan }}</p>
+        <a href="#informasi-model">ⓘ Lihat info model</a>
+      </aside>
+    </div>
 
     <section class="kartu prioritas-mahasiswa" aria-labelledby="judul-prioritas">
       <div class="bagian-dashboard__kepala prioritas-mahasiswa__kepala">
@@ -56,9 +104,10 @@
           <h2 id="judul-prioritas">Prioritas pendampingan</h2>
           <p>Mahasiswa berisiko tinggi berdasarkan prediksi terakhir.</p>
         </div>
-        <a class="tombol tombol--sekunder" href="{{ url_for('mahasiswa', kategori='Berisiko Tinggi') }}">
-          Lihat semua mahasiswa
-        </a>
+        <form class="prioritas-mahasiswa__pencarian" action="{{ url_for('mahasiswa') }}" method="get" role="search">
+          <label class="visually-hidden" for="pencarian-mahasiswa">Cari mahasiswa</label>
+          <input class="input-kontrol" id="pencarian-mahasiswa" name="q" type="search" placeholder="Cari nama atau ID…">
+        </form>
       </div>
       {% if mahasiswa_prioritas %}
         <div class="tabel-bungkus">
@@ -79,7 +128,7 @@
                   <td>{{ item.nama or "Nama belum diisi" }}</td>
                   <td>{{ item.id_mahasiswa }}</td>
                   <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
-                  <td><span class="badge-kategori badge-kategori--berisiko-tinggi">Berisiko Tinggi</span></td>
+                  <td><span class="badge-kategori badge-kategori--berisiko-tinggi"><span class="badge-kategori__ikon" aria-hidden="true"></span>Berisiko Tinggi</span></td>
                   <td>{{ item.status_tindak_lanjut }}</td>
                   <td><a href="{{ url_for('detail_mahasiswa', id_mahasiswa=item.id) }}">Detail</a></td>
                 </tr>
@@ -93,64 +142,26 @@
           <p>Masukkan nama dan ID saat membuat prediksi individu agar profil tampil di sini.</p>
         </div>
       {% endif %}
+      <div class="prioritas-mahasiswa__aksi">
+        <a class="tombol tombol--sekunder" href="{{ url_for('mahasiswa') }}">Lihat semua</a>
+        <a class="tombol tombol--primer" href="{{ url_for('mahasiswa', kategori='Berisiko Tinggi') }}">Tinjau risiko</a>
+      </div>
     </section>
 
-    <section class="ringkasan-grid" id="informasi-model" aria-label="Ringkasan model">
-      <article class="ringkasan-kartu">
-        <h2 class="ringkasan-kartu__label">Versi model</h2>
-        <p class="ringkasan-kartu__nilai">{{ versi_model }}</p>
-      </article>
-      <article class="ringkasan-kartu">
-        <h2 class="ringkasan-kartu__label">Tanggal pelatihan</h2>
-        <p class="ringkasan-kartu__nilai ringkasan-kartu__nilai--tanggal">{{ tanggal_pelatihan }}</p>
-      </article>
-      <article class="ringkasan-kartu">
-        <h2 class="ringkasan-kartu__label">Jumlah fitur</h2>
-        <p class="ringkasan-kartu__nilai">{{ jumlah_fitur }}</p>
-      </article>
-      <article class="ringkasan-kartu">
-        <h2 class="ringkasan-kartu__label">Ambang risiko tinggi</h2>
-        <p class="ringkasan-kartu__nilai">&lt; {{ "%.1f"|format(ambang_risiko) }}</p>
-      </article>
-    </section>
-
-    {% include "_kepentingan_model.html" %}
-
-    <section class="bagian-dashboard" aria-labelledby="judul-metrik">
+    <section class="bagian-dashboard" id="informasi-model" aria-labelledby="judul-informasi-model">
       <div class="bagian-dashboard__kepala">
-        <div>
-          <h2 id="judul-metrik">Kinerja pada data test</h2>
-          <p>Evaluasi model pada bagian data test.</p>
-        </div>
+        <h2 id="judul-informasi-model">Informasi model</h2>
+        <p>Ringkasan versi dan evaluasi model prediksi.</p>
       </div>
       <dl class="metrik-grid">
-        <div class="metrik-kartu">
-          <dt>MAE</dt>
-          <dd>{{ "%.2f"|format(metrik_test["MAE"]) }}</dd>
-        </div>
-        <div class="metrik-kartu">
-          <dt>RMSE</dt>
-          <dd>{{ "%.2f"|format(metrik_test["RMSE"]) }}</dd>
-        </div>
-        <div class="metrik-kartu">
-          <dt>R²</dt>
-          <dd>{{ "%.2f"|format(metrik_test["R2"]) }}</dd>
-        </div>
-        <div class="metrik-kartu">
-          <dt>Recall Dropout</dt>
-          <dd>{{ "%.1f"|format(recall_dropout * 100) }}%</dd>
-        </div>
-        <div class="metrik-kartu">
-          <dt>Precision Dropout</dt>
-          <dd>{{ "%.1f"|format(precision_dropout * 100) }}%</dd>
-        </div>
+        <div class="metrik-kartu"><dt>MAE</dt><dd>{{ "%.2f"|format(metrik_test["MAE"]) }}</dd></div>
+        <div class="metrik-kartu"><dt>RMSE</dt><dd>{{ "%.2f"|format(metrik_test["RMSE"]) }}</dd></div>
+        <div class="metrik-kartu"><dt>R²</dt><dd>{{ "%.2f"|format(metrik_test["R2"]) }}</dd></div>
+        <div class="metrik-kartu"><dt>Recall Dropout</dt><dd>{{ "%.1f"|format(recall_dropout * 100) }}%</dd></div>
+        <div class="metrik-kartu"><dt>Precision Dropout</dt><dd>{{ "%.1f"|format(precision_dropout * 100) }}%</dd></div>
       </dl>
+      {% include "_kepentingan_model.html" %}
     </section>
-
-    <aside class="banner-hasil" role="note">
-      <span class="banner-hasil__ikon" aria-hidden="true">!</span>
-      <p class="banner-hasil__teks">Hasil ini pendukung keputusan, bukan keputusan otomatis.</p>
-    </aside>
 
     <section class="kartu keterbatasan" aria-labelledby="judul-keterbatasan">
       <h2 class="kartu__judul" id="judul-keterbatasan">Keterbatasan</h2>

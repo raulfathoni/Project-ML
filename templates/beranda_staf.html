@@ -3,30 +3,104 @@
 {% block title %}Dashboard Staf Akademik - EWS Akademik{% endblock %}
 
 {% block content %}
+  {% set total_csv = jumlah_csv %}
+  {% set persen_csv_berisiko = (jumlah_csv_berisiko * 100 / total_csv) if total_csv else 0 %}
+  {% set persen_csv_normal = (jumlah_csv_normal * 100 / total_csv) if total_csv else 0 %}
   <div class="dashboard dashboard-staf">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <span>Ruang akademik</span>
+      <span aria-hidden="true">›</span>
+      <strong>Dashboard</strong>
+    </nav>
+
     <header class="dashboard-header">
       <div>
-        <p class="dashboard-header__label">Ruang akademik</p>
         <h1 class="judul-halaman">Pemantauan data akademik</h1>
         <p class="dashboard-header__deskripsi">Unggah data mahasiswa untuk menjalankan prediksi secara berkelompok.</p>
       </div>
-      <a class="tombol tombol--primer" href="{{ url_for('unggah') }}">Unggah data CSV</a>
+      <div class="dashboard-header__aksi">
+        <a class="tombol tombol--sekunder" href="{{ url_for('riwayat', sumber='csv') }}">Riwayat CSV</a>
+        <a class="tombol tombol--primer" href="{{ url_for('unggah') }}"><span aria-hidden="true">＋</span> Unggah data CSV</a>
+      </div>
     </header>
+
+    <aside class="banner-hasil banner-hasil--dashboard" role="note">
+      <span class="banner-hasil__ikon" aria-hidden="true">ⓘ</span>
+      <p class="banner-hasil__teks">Hasil ini pendukung keputusan, bukan keputusan otomatis.</p>
+    </aside>
 
     <section class="ringkasan-grid" aria-label="Ringkasan pemrosesan CSV">
       <article class="ringkasan-kartu">
-        <h2 class="ringkasan-kartu__label">Prediksi dari CSV</h2>
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Prediksi dari CSV</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">≡</span>
+        </div>
         <p class="ringkasan-kartu__nilai">{{ jumlah_csv }}</p>
+        <p class="ringkasan-kartu__keterangan">Total hasil unggahan tersimpan</p>
       </article>
       <article class="ringkasan-kartu ringkasan-kartu--risiko">
-        <h2 class="ringkasan-kartu__label">Berisiko tinggi</h2>
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Berisiko Tinggi</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">△</span>
+        </div>
         <p class="ringkasan-kartu__nilai">{{ jumlah_csv_berisiko }}</p>
+        <p class="ringkasan-kartu__keterangan">{{ "%.0f"|format(persen_csv_berisiko) }}% dari prediksi CSV</p>
       </article>
       <article class="ringkasan-kartu ringkasan-kartu--normal">
-        <h2 class="ringkasan-kartu__label">Normal</h2>
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Normal</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">◷</span>
+        </div>
         <p class="ringkasan-kartu__nilai">{{ jumlah_csv_normal }}</p>
+        <p class="ringkasan-kartu__keterangan">{{ "%.0f"|format(persen_csv_normal) }}% dari prediksi CSV</p>
+      </article>
+      <article class="ringkasan-kartu">
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Unggahan terakhir</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">◎</span>
+        </div>
+        {% if riwayat_csv %}
+          <p class="ringkasan-kartu__nilai ringkasan-kartu__nilai--tanggal">{{ riwayat_csv[0].waktu[:10] }}</p>
+          <p class="ringkasan-kartu__keterangan">{{ riwayat_csv[0].kategori }}</p>
+        {% else %}
+          <p class="ringkasan-kartu__nilai ringkasan-kartu__nilai--tanggal">Belum ada</p>
+          <p class="ringkasan-kartu__keterangan">Belum pernah unggah CSV</p>
+        {% endif %}
       </article>
     </section>
+
+    <div class="dashboard-panel-grid">
+      <section class="kartu distribusi-risiko" aria-labelledby="judul-distribusi-csv">
+        <div>
+          <h2 class="kartu__judul" id="judul-distribusi-csv">Peta hasil unggahan CSV</h2>
+          <p>Distribusi kategori dari seluruh hasil prediksi CSV tersimpan.</p>
+        </div>
+        <div class="distribusi-risiko__nilai">
+          <strong>{{ "%.0f"|format(persen_csv_berisiko) }}%</strong>
+          <span>hasil berisiko tinggi</span>
+        </div>
+        <div class="distribusi-risiko__bar" role="img" aria-label="{{ jumlah_csv_berisiko }} berisiko tinggi, {{ jumlah_csv_normal }} normal">
+          <span class="distribusi-risiko__tinggi" style="width: {{ persen_csv_berisiko }}%"></span>
+          <span class="distribusi-risiko__normal" style="width: {{ persen_csv_normal }}%"></span>
+        </div>
+        <div class="distribusi-risiko__legenda">
+          <span><i class="distribusi-risiko__titik distribusi-risiko__titik--tinggi"></i> Berisiko Tinggi: {{ jumlah_csv_berisiko }}</span>
+          <span><i class="distribusi-risiko__titik distribusi-risiko__titik--normal"></i> Normal: {{ jumlah_csv_normal }}</span>
+        </div>
+      </section>
+
+      <aside class="model-panel" aria-label="Ringkasan model">
+        <span class="model-panel__label">Model pembelajaran</span>
+        <h2>Random Forest Regressor</h2>
+        <p>Prediksi nilai semester kedua secara berkelompok.</p>
+        <dl>
+          <div><dd>{{ jumlah_fitur }}</dd><dt>Jumlah fitur</dt></div>
+          <div><dd>{{ jumlah_csv }}</dd><dt>Hasil CSV</dt></div>
+          <div><dd>&lt; {{ "%.1f"|format(ambang_risiko) }}</dd><dt>Ambang risiko</dt></div>
+        </dl>
+        <a href="#informasi-model">ⓘ Lihat info model</a>
+      </aside>
+    </div>
 
     <section class="kartu prioritas-mahasiswa" aria-labelledby="judul-riwayat-csv">
       <div class="bagian-dashboard__kepala prioritas-mahasiswa__kepala">
@@ -34,7 +108,7 @@
           <h2 id="judul-riwayat-csv">Prediksi CSV terbaru</h2>
           <p>Ringkasan hasil pemrosesan CSV yang tersimpan.</p>
         </div>
-        <a class="tombol tombol--sekunder" href="{{ url_for('riwayat', sumber='csv') }}">Lihat riwayat</a>
+        <a class="tombol tombol--sekunder" href="{{ url_for('riwayat', sumber='csv') }}">Lihat riwayat CSV</a>
       </div>
       {% if riwayat_csv %}
         <div class="tabel-bungkus">
@@ -51,9 +125,15 @@
               {% for item in riwayat_csv %}
                 <tr>
                   <td>{{ item.id_pseudonim or "Tidak dicantumkan" }}</td>
-                  <td>{{ item.waktu }}</td>
+                  <td><time datetime="{{ item.waktu }}">{{ item.waktu }}</time></td>
                   <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
-                  <td>{{ item.kategori }}</td>
+                  <td>
+                    {% if item.kategori == "Berisiko Tinggi" %}
+                      <span class="badge-kategori badge-kategori--berisiko-tinggi"><span class="badge-kategori__ikon" aria-hidden="true"></span>Berisiko Tinggi</span>
+                    {% else %}
+                      <span class="badge-kategori badge-kategori--normal"><span class="badge-kategori__ikon" aria-hidden="true"></span>Normal</span>
+                    {% endif %}
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -69,40 +149,17 @@
 
     <section class="bagian-dashboard" id="informasi-model" aria-labelledby="judul-informasi-model">
       <div class="bagian-dashboard__kepala">
-        <div>
-          <h2 id="judul-informasi-model">Informasi model</h2>
-          <p>Ringkasan versi dan evaluasi model prediksi.</p>
-        </div>
+        <h2 id="judul-informasi-model">Informasi model</h2>
+        <p>Ringkasan versi dan evaluasi model prediksi.</p>
       </div>
-      <section class="ringkasan-grid" aria-label="Metadata model">
-        <article class="ringkasan-kartu">
-          <h3 class="ringkasan-kartu__label">Versi model</h3>
-          <p class="ringkasan-kartu__nilai">{{ versi_model }}</p>
-        </article>
-        <article class="ringkasan-kartu">
-          <h3 class="ringkasan-kartu__label">Tanggal pelatihan</h3>
-          <p class="ringkasan-kartu__nilai ringkasan-kartu__nilai--tanggal">{{ tanggal_pelatihan }}</p>
-        </article>
-        <article class="ringkasan-kartu">
-          <h3 class="ringkasan-kartu__label">Jumlah fitur</h3>
-          <p class="ringkasan-kartu__nilai">{{ jumlah_fitur }}</p>
-        </article>
-        <article class="ringkasan-kartu">
-          <h3 class="ringkasan-kartu__label">Ambang risiko tinggi</h3>
-          <p class="ringkasan-kartu__nilai">&lt; {{ "%.1f"|format(ambang_risiko) }}</p>
-        </article>
-      </section>
-      {% include "_kepentingan_model.html" %}
       <dl class="metrik-grid">
+        <div class="metrik-kartu"><dt>Versi model</dt><dd>{{ versi_model }}</dd></div>
+        <div class="metrik-kartu"><dt>Tanggal pelatihan</dt><dd>{{ tanggal_pelatihan }}</dd></div>
         <div class="metrik-kartu"><dt>MAE</dt><dd>{{ "%.2f"|format(metrik_test["MAE"]) }}</dd></div>
         <div class="metrik-kartu"><dt>RMSE</dt><dd>{{ "%.2f"|format(metrik_test["RMSE"]) }}</dd></div>
         <div class="metrik-kartu"><dt>R²</dt><dd>{{ "%.2f"|format(metrik_test["R2"]) }}</dd></div>
       </dl>
+      {% include "_kepentingan_model.html" %}
     </section>
-
-    <aside class="banner-hasil" role="note">
-      <span class="banner-hasil__ikon" aria-hidden="true">!</span>
-      <p class="banner-hasil__teks">Hasil prediksi merupakan pendukung keputusan, bukan keputusan otomatis.</p>
-    </aside>
   </div>
 {% endblock %}
