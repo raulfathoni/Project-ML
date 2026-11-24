@@ -1017,4 +1017,4 @@ def create_app(config=None):
 
 
 if __name__ == "__main__":
-    create_app().run(debug=False)
+    create_app().run(debug=True)
