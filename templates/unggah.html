@@ -107,7 +107,7 @@
                 <th scope="col">Peringkat</th>
                 <th scope="col">Nama</th>
                 <th scope="col">ID / baris</th>
-                <th scope="col">Nilai prediksi</th>
+                <th scope="col">{{ label_nilai_prediksi }}</th>
                 <th scope="col">Kategori</th>
                 <th scope="col">Faktor utama</th>
               </tr>
@@ -118,7 +118,7 @@
                   <td>{{ item.peringkat }}</td>
                   <td>{{ item.nama or "Nama tidak dicantumkan" }}</td>
                   <td>{{ item.id }}</td>
-                  <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
+                  <td>{{ "%.1f"|format(item.nilai_prediksi) }}%</td>
                   <td>
                     {% if item.kategori == "Berisiko Tinggi" %}
                       <span class="badge-kategori badge-kategori--berisiko-tinggi">

@@ -717,6 +717,10 @@ p {
   gap: var(--jarak-4);
 }
 
+.ringkasan-grid--tiga {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .ringkasan-kartu,
 .metrik-kartu {
   min-width: 0;

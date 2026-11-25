@@ -219,7 +219,7 @@ def daftar_mahasiswa(
         baris = koneksi.execute(
             """
             SELECT m.id, m.id_mahasiswa, m.nama, m.id_pseudonim,
-                   p.waktu, p.nilai_prediksi, p.kategori, p.faktor_utama,
+                   p.waktu, p.versi_model, p.nilai_prediksi, p.kategori, p.faktor_utama,
                    p.rekomendasi,
                    COALESCE(t.status, 'Belum dimulai') AS status_tindak_lanjut
             FROM mahasiswa m
@@ -241,7 +241,9 @@ def daftar_mahasiswa(
               )
             ORDER BY
                 CASE p.kategori WHEN 'Berisiko Tinggi' THEN 0 ELSE 1 END,
-                p.nilai_prediksi ASC, m.nama COLLATE NOCASE ASC
+                CASE WHEN p.versi_model = 'v2.0'
+                     THEN -p.nilai_prediksi ELSE p.nilai_prediksi END ASC,
+                m.nama COLLATE NOCASE ASC
             LIMIT ? OFFSET ?
             """,
             (

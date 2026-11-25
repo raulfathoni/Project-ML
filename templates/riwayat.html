@@ -52,7 +52,7 @@
                 <th scope="col">ID pseudonim</th>
                 <th scope="col">Waktu</th>
                 <th scope="col">Versi model</th>
-                <th scope="col">Nilai prediksi</th>
+                <th scope="col">Skor prediksi</th>
                 <th scope="col">Kategori</th>
                 <th scope="col">Sumber</th>
               </tr>
@@ -63,7 +63,7 @@
                   <td>{{ item.id_pseudonim or "Tidak dicantumkan" }}</td>
                   <td><time datetime="{{ item.waktu }}">{{ item.waktu }}</time></td>
                   <td>{{ item.versi_model }}</td>
-                  <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
+                  <td>{% if item.versi_model == 'v2.0' %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
                   <td>
                     {% if item.kategori == "Berisiko Tinggi" %}
                       <span class="badge-kategori badge-kategori--berisiko-tinggi">

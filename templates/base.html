@@ -28,13 +28,13 @@
               <a class="app-navbar__link" href="{{ url_for('mahasiswa') }}">Mahasiswa</a>
               <a class="app-navbar__link" href="{{ url_for('individu') }}">Prediksi individu</a>
               <a class="app-navbar__link" href="{{ url_for('mahasiswa', status='aktif') }}">Tindak lanjut</a>
-              <a class="app-navbar__link" href="{{ url_for('beranda') }}#informasi-model">Informasi model</a>
+              <a class="app-navbar__link" href="{{ url_for('informasi_model') }}">Informasi model</a>
               <a class="app-navbar__link" href="{{ url_for('riwayat') }}">Riwayat</a>
               <span class="navbar-text app-navbar__role">Dosen Wali</span>
             {% elif session.get('peran') == 'staf_akademik' %}
               <a class="app-navbar__link" href="{{ url_for('beranda') }}">Dashboard</a>
               <a class="app-navbar__link" href="{{ url_for('unggah') }}">Unggah data CSV</a>
-              <a class="app-navbar__link" href="{{ url_for('beranda') }}#informasi-model">Informasi model</a>
+              <a class="app-navbar__link" href="{{ url_for('informasi_model') }}">Informasi model</a>
               <a class="app-navbar__link" href="{{ url_for('riwayat', sumber='csv') }}">Riwayat CSV</a>
               <span class="navbar-text app-navbar__role">Staf Akademik</span>
             {% endif %}

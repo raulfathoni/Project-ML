@@ -36,9 +36,17 @@ class LayananPrediksi:
     def __init__(self, path_model, path_statistik):
         bundle = joblib.load(path_model)
         self.model = bundle['model']
-        self.model.n_jobs = 1                      # prediksi cepat tanpa overhead paralel
+        self.klasifikasi = hasattr(self.model, 'predict_proba')
+        if self.klasifikasi:
+            indeks_risiko = np.flatnonzero(np.asarray(self.model.classes_) == 1)
+            if len(indeks_risiko) != 1:
+                raise ValueError('Model klasifikasi harus memiliki kelas Dropout bernilai 1.')
+            self.indeks_risiko = int(indeks_risiko[0])
+            self.t_tinggi = float(bundle['ambang_probabilitas']) * 100
+        else:
+            self.model.n_jobs = 1
+            self.t_tinggi = float(bundle['ambang_berisiko_tinggi'])
         self.fitur = list(bundle['fitur'])
-        self.t_tinggi = float(bundle['ambang_berisiko_tinggi'])
         self.metadata = bundle['metadata']
         with open(path_statistik, encoding='utf-8') as f:
             self.stat = json.load(f)
@@ -83,25 +91,35 @@ class LayananPrediksi:
         return x, galat, peringatan
 
     # ---------- prediksi dan kategori ----------
+    def _nilai_prediksi(self, x):
+        if self.klasifikasi:
+            return self.model.predict_proba(x[self.fitur])[:, self.indeks_risiko] * 100
+        return self.model.predict(x[self.fitur])
+
     def kategori(self, nilai):
+        if self.klasifikasi:
+            return np.where(np.asarray(nilai) >= self.t_tinggi, 'Berisiko Tinggi', 'Normal')
         return np.where(np.asarray(nilai) < self.t_tinggi, 'Berisiko Tinggi', 'Normal')
 
     def prediksi(self, x):
-        mentah = self.model.predict(x[self.fitur])
+        mentah = self._nilai_prediksi(x)
         hasil = pd.DataFrame(index=x.index)
-        hasil['nilai_prediksi'] = mentah.round(2)           # hanya untuk tampilan
-        hasil['kategori'] = self.kategori(mentah)           # kategori dari nilai mentah (sama dengan evaluasi)
-        hasil['peringkat'] = pd.Series(mentah, index=x.index).rank(method='first').astype(int)
+        hasil['nilai_prediksi'] = mentah.round(2)
+        hasil['kategori'] = self.kategori(mentah)
+        hasil['peringkat'] = pd.Series(mentah, index=x.index).rank(
+            method='first', ascending=not self.klasifikasi
+        ).astype(int)
         return hasil
 
     # ---------- faktor dominan (substitusi median data latih) ----------
     def faktor_dominan(self, x, k=3):
-        dasar = self.model.predict(x[self.fitur])
+        dasar = self._nilai_prediksi(x)
         dampak = {}
         for f in self.fitur_penjelas:
             xs = x[self.fitur].copy()
             xs[f] = self.stat[f]['median']
-            dampak[f] = self.model.predict(xs) - dasar   # positif = fitur ini menekan prediksi
+            pengganti = self._nilai_prediksi(xs)
+            dampak[f] = dasar - pengganti if self.klasifikasi else pengganti - dasar
         dampak = pd.DataFrame(dampak, index=x.index)
         hasil = []
         for idx in x.index:
@@ -139,4 +157,6 @@ class LayananPrediksi:
         hasil['faktor'] = faktor
         hasil['rekomendasi'] = [self.rekomendasi(x.loc[i], hasil.loc[i, 'kategori'], faktor[n])
                                 for n, i in enumerate(x.index)]
-        return hasil.sort_values('nilai_prediksi'), galat, peringatan
+        return hasil.sort_values(
+            'nilai_prediksi', ascending=not self.klasifikasi
+        ), galat, peringatan

@@ -11,8 +11,8 @@
 
     <section class="kartu hasil-ringkasan" aria-labelledby="judul-ringkasan-hasil">
       <div>
-        <h2 class="ringkasan-kartu__label" id="judul-ringkasan-hasil">Nilai prediksi semester 2</h2>
-        <p class="hasil-ringkasan__nilai">{{ "%.2f"|format(nilai_prediksi) }}</p>
+        <h2 class="ringkasan-kartu__label" id="judul-ringkasan-hasil">{{ label_nilai_prediksi }}</h2>
+        <p class="hasil-ringkasan__nilai">{{ "%.1f"|format(nilai_prediksi) }}%</p>
       </div>
       {% if kategori == "Berisiko Tinggi" %}
         <span class="badge-kategori badge-kategori--berisiko-tinggi">
