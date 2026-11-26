@@ -114,7 +114,7 @@ def test_simpan_daftar_filter_dan_hitung_riwayat(tmp_path):
     db_path = tmp_path / "riwayat.sqlite3"
     init_db(db_path)
     id_lama = _simpan(db_path, "2026-11-16T10:00:00", "Normal", "formulir")
-    id_baru = _simpan(db_path, "2026-11-16T11:00:00", "Berisiko Tinggi", "csv")
+    id_baru = _simpan(db_path, "2026-11-16T11:00:00", "Berisiko", "csv")
 
     hasil = daftar_riwayat(10, 0, db_path=db_path)
 
@@ -123,7 +123,7 @@ def test_simpan_daftar_filter_dan_hitung_riwayat(tmp_path):
         {"fitur": "Nilai semester 1", "dampak": 1.2}
     ]
     assert len(daftar_riwayat(10, 0, "Normal", "formulir", db_path)) == 1
-    assert hitung_riwayat("Berisiko Tinggi", "csv", db_path) == 1
+    assert hitung_riwayat("Berisiko", "csv", db_path) == 1
     assert hitung_riwayat("' OR 1=1 --", db_path=db_path) == 0
 
 

@@ -11,7 +11,7 @@ flowchart LR
     Browser[Browser] --> Routes[app.py<br/>route dan template context]
     Routes --> Auth[auth.py<br/>sesi dan pembatasan login]
     Routes --> Prediction[layanan_prediksi.py<br/>validasi dan inferensi]
-    Prediction --> Model[model/*.joblib<br/>Random Forest]
+    Prediction --> Model[model/*.joblib<br/>Gradient Boosting Classifier]
     Prediction --> Stats[model/*.json<br/>statistik fitur]
     Routes --> Database[database.py<br/>SQLite]
     Database --> SQLite[instance/ews.sqlite3]
@@ -36,7 +36,7 @@ route prediksi.
 | [`config.py`](../config.py) | Nilai konfigurasi dari environment dan lokasi database serta aset model. |
 | [`database.py`](../database.py) | Inisialisasi skema dan operasi SQLite untuk riwayat prediksi, profil mahasiswa, dan tindak lanjut. |
 | [`layanan_prediksi.py`](../layanan_prediksi.py) | Batas logika model: validasi data, prediksi, kategori, faktor dominan, serta rekomendasi. |
-| `model/` | Artefak model `ews_rf_v1.0.joblib`, statistik fitur `statistik_fitur_v1.0.json`, dan `requirements_model.txt`. Model sudah dilatih; aplikasi memuatnya, bukan melatih ulang. |
+| `model/` | Artefak aktif `ews_gb_v2.1.joblib` dengan statistik `statistik_fitur_v2.1.json` (15 fitur), serta artefak versi sebelumnya. Model sudah dilatih; aplikasi memuatnya, bukan melatih ulang. |
 | `templates/` | Tampilan Jinja2: `base.html` sebagai layout bersama; halaman login, beranda per peran, formulir individu, unggah, hasil, riwayat, daftar/detail mahasiswa, dan galat. `_kepentingan_model.html` adalah partial untuk visualisasi kepentingan fitur. |
 | `static/css/` | Gaya antarmuka. `tokens.css` mendefinisikan token desain dan `app.css` memuat gaya komponen/halaman. |
 | `tests/` | Tes pytest: `test_app.py` untuk route dan perilaku web; `test_database.py` untuk skema dan fungsi penyimpanan/query. |
@@ -100,9 +100,8 @@ sequenceDiagram
 Jika input tidak valid, `layanan_prediksi.py` mengembalikan galat dan route
 menampilkan pesan pada formulir tanpa menyimpan prediksi. Nilai di luar rentang
 statistik latih atau kode kategori yang tidak dikenal menjadi peringatan, bukan
-penghenti prediksi. Formulir menyediakan sembilan fitur utama; fitur lainnya
-diisi dengan nilai awal dari statistik model kecuali pengguna membuka dan
-mengubah bagian lanjutan.
+penghenti prediksi. Formulir menyediakan delapan fitur utama; tujuh fitur lainnya diisi dengan nilai
+awal dari statistik model kecuali pengguna membuka dan mengubah bagian lanjutan.
 
 ### 4. Prediksi batch CSV
 
@@ -129,7 +128,7 @@ mengubah bagian lanjutan.
    proses. Nilai di luar rentang dan kode kategorikal yang tidak ada di data latih
    menghasilkan peringatan.
 3. Memanggil model untuk menghasilkan nilai prediksi. Kategori adalah
-   **Berisiko Tinggi** jika nilai mentah di bawah ambang model; selain itu
+   **Berisiko** jika nilai mentah di bawah ambang model; selain itu
    **Normal**.
 4. Membandingkan fitur penjelas terhadap median data latih untuk menghitung
    faktor dominan. Ini adalah penjelasan berbasis substitusi, bukan klaim sebab
@@ -141,6 +140,11 @@ mengubah bagian lanjutan.
 Prediksi adalah dukungan keputusan, bukan keputusan otomatis. Logika model,
 validasi, kategori, faktor, dan rekomendasi milik `layanan_prediksi.py`; route
 sebaiknya hanya menyiapkan input, menangani keluaran, dan mengatur tampilan.
+
+Aplikasi menggunakan `ews_gb_v2.1.joblib` dan
+`statistik_fitur_v2.1.json`. Keduanya mendefinisikan 15 fitur yang sama; daftar
+dan urutannya bersumber dari metadata model, sedangkan statistik menjadi sumber
+rentang validasi dan nilai awal formulir.
 
 ## Penyimpanan data
 

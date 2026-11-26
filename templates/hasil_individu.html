@@ -14,10 +14,10 @@
         <h2 class="ringkasan-kartu__label" id="judul-ringkasan-hasil">{{ label_nilai_prediksi }}</h2>
         <p class="hasil-ringkasan__nilai">{{ "%.1f"|format(nilai_prediksi) }}%</p>
       </div>
-      {% if kategori == "Berisiko Tinggi" %}
+      {% if kategori == "Berisiko" %}
         <span class="badge-kategori badge-kategori--berisiko-tinggi">
           <span class="badge-kategori__ikon" aria-hidden="true"></span>
-          Berisiko Tinggi
+          Berisiko
         </span>
       {% else %}
         <span class="badge-kategori badge-kategori--normal">

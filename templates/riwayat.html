@@ -17,7 +17,7 @@
           <label class="input-label" for="filter-kategori-riwayat">Kategori</label>
           <select class="input-kontrol" id="filter-kategori-riwayat" name="kategori">
             <option value="" {% if not filter_kategori %}selected{% endif %}>Semua kategori</option>
-            <option value="Berisiko Tinggi" {% if filter_kategori == "Berisiko Tinggi" %}selected{% endif %}>Berisiko Tinggi</option>
+            <option value="Berisiko" {% if filter_kategori == "Berisiko" %}selected{% endif %}>Berisiko</option>
             <option value="Normal" {% if filter_kategori == "Normal" %}selected{% endif %}>Normal</option>
           </select>
         </div>
@@ -63,12 +63,12 @@
                   <td>{{ item.id_pseudonim or "Tidak dicantumkan" }}</td>
                   <td><time datetime="{{ item.waktu }}">{{ item.waktu }}</time></td>
                   <td>{{ item.versi_model }}</td>
-                  <td>{% if item.versi_model == 'v2.0' %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
+                  <td>{% if item.versi_model.startswith('v2.') %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
                   <td>
-                    {% if item.kategori == "Berisiko Tinggi" %}
+                    {% if item.kategori == "Berisiko" %}
                       <span class="badge-kategori badge-kategori--berisiko-tinggi">
                         <span class="badge-kategori__ikon" aria-hidden="true"></span>
-                        Berisiko Tinggi
+                        Berisiko
                       </span>
                     {% else %}
                       <span class="badge-kategori badge-kategori--normal">

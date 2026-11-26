@@ -182,7 +182,7 @@ def ringkasan_mahasiswa(db_path=None):
         baris = koneksi.execute(
             """
             SELECT COUNT(*) AS total,
-                   SUM(CASE WHEN terbaru.kategori = 'Berisiko Tinggi'
+                   SUM(CASE WHEN terbaru.kategori = 'Berisiko'
                        THEN 1 ELSE 0 END) AS berisiko_tinggi,
                    SUM(CASE WHEN terbaru.kategori = 'Normal'
                        THEN 1 ELSE 0 END) AS normal
@@ -240,8 +240,8 @@ def daftar_mahasiswa(
                   OR COALESCE(t.status, 'Belum dimulai') = ?
               )
             ORDER BY
-                CASE p.kategori WHEN 'Berisiko Tinggi' THEN 0 ELSE 1 END,
-                CASE WHEN p.versi_model = 'v2.0'
+                CASE p.kategori WHEN 'Berisiko' THEN 0 ELSE 1 END,
+                CASE WHEN p.versi_model LIKE 'v2.%'
                      THEN -p.nilai_prediksi ELSE p.nilai_prediksi END ASC,
                 m.nama COLLATE NOCASE ASC
             LIMIT ? OFFSET ?

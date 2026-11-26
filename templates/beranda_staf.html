@@ -40,7 +40,7 @@
       </article>
       <article class="ringkasan-kartu ringkasan-kartu--risiko">
         <div class="ringkasan-kartu__kepala">
-          <h2 class="ringkasan-kartu__label">Berisiko Tinggi</h2>
+          <h2 class="ringkasan-kartu__label">Berisiko</h2>
           <span class="ringkasan-kartu__ikon" aria-hidden="true">△</span>
         </div>
         <p class="ringkasan-kartu__nilai">{{ jumlah_csv_berisiko }}</p>
@@ -76,14 +76,14 @@
         </div>
         <div class="distribusi-risiko__nilai">
           <strong>{{ "%.0f"|format(persen_csv_berisiko) }}%</strong>
-          <span>hasil berisiko tinggi</span>
+          <span>hasil berisiko</span>
         </div>
-        <div class="distribusi-risiko__bar" role="img" aria-label="{{ jumlah_csv_berisiko }} berisiko tinggi, {{ jumlah_csv_normal }} normal">
+        <div class="distribusi-risiko__bar" role="img" aria-label="{{ jumlah_csv_berisiko }} berisiko, {{ jumlah_csv_normal }} normal">
           <span class="distribusi-risiko__tinggi" style="width: {{ persen_csv_berisiko }}%"></span>
           <span class="distribusi-risiko__normal" style="width: {{ persen_csv_normal }}%"></span>
         </div>
         <div class="distribusi-risiko__legenda">
-          <span><i class="distribusi-risiko__titik distribusi-risiko__titik--tinggi"></i> Berisiko Tinggi: {{ jumlah_csv_berisiko }}</span>
+          <span><i class="distribusi-risiko__titik distribusi-risiko__titik--tinggi"></i> Berisiko: {{ jumlah_csv_berisiko }}</span>
           <span><i class="distribusi-risiko__titik distribusi-risiko__titik--normal"></i> Normal: {{ jumlah_csv_normal }}</span>
         </div>
     </section>
@@ -112,10 +112,10 @@
                 <tr>
                   <td>{{ item.id_pseudonim or "Tidak dicantumkan" }}</td>
                   <td><time datetime="{{ item.waktu }}">{{ item.waktu }}</time></td>
-                  <td>{% if item.versi_model == 'v2.0' %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
+                  <td>{% if item.versi_model.startswith('v2.') %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
                   <td>
-                    {% if item.kategori == "Berisiko Tinggi" %}
-                      <span class="badge-kategori badge-kategori--berisiko-tinggi"><span class="badge-kategori__ikon" aria-hidden="true"></span>Berisiko Tinggi</span>
+                    {% if item.kategori == "Berisiko" %}
+                      <span class="badge-kategori badge-kategori--berisiko-tinggi"><span class="badge-kategori__ikon" aria-hidden="true"></span>Berisiko</span>
                     {% else %}
                       <span class="badge-kategori badge-kategori--normal"><span class="badge-kategori__ikon" aria-hidden="true"></span>Normal</span>
                     {% endif %}

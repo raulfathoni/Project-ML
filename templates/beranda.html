@@ -40,7 +40,7 @@
       </article>
       <article class="ringkasan-kartu ringkasan-kartu--risiko">
         <div class="ringkasan-kartu__kepala">
-          <h2 class="ringkasan-kartu__label">Berisiko Tinggi</h2>
+          <h2 class="ringkasan-kartu__label">Berisiko</h2>
           <span class="ringkasan-kartu__ikon" aria-hidden="true">△</span>
         </div>
         <p class="ringkasan-kartu__nilai">{{ ringkasan_mahasiswa.berisiko_tinggi }}</p>
@@ -63,14 +63,14 @@
         </div>
         <div class="distribusi-risiko__nilai">
           <strong>{{ "%.0f"|format(persen_berisiko) }}%</strong>
-          <span>mahasiswa berisiko tinggi</span>
+          <span>mahasiswa berisiko</span>
         </div>
-        <div class="distribusi-risiko__bar" role="img" aria-label="{{ ringkasan_mahasiswa.berisiko_tinggi }} berisiko tinggi, {{ ringkasan_mahasiswa.normal }} normal">
+        <div class="distribusi-risiko__bar" role="img" aria-label="{{ ringkasan_mahasiswa.berisiko_tinggi }} berisiko, {{ ringkasan_mahasiswa.normal }} normal">
           <span class="distribusi-risiko__tinggi" style="width: {{ persen_berisiko }}%"></span>
           <span class="distribusi-risiko__normal" style="width: {{ persen_normal }}%"></span>
         </div>
         <div class="distribusi-risiko__legenda">
-          <span><i class="distribusi-risiko__titik distribusi-risiko__titik--tinggi"></i> Berisiko Tinggi: {{ ringkasan_mahasiswa.berisiko_tinggi }}</span>
+          <span><i class="distribusi-risiko__titik distribusi-risiko__titik--tinggi"></i> Berisiko: {{ ringkasan_mahasiswa.berisiko_tinggi }}</span>
           <span><i class="distribusi-risiko__titik distribusi-risiko__titik--normal"></i> Normal: {{ ringkasan_mahasiswa.normal }}</span>
         </div>
     </section>
@@ -79,7 +79,7 @@
       <div class="bagian-dashboard__kepala prioritas-mahasiswa__kepala">
         <div>
           <h2 id="judul-prioritas">Prioritas pendampingan</h2>
-          <p>Mahasiswa berisiko tinggi berdasarkan prediksi terakhir.</p>
+          <p>Mahasiswa berisiko berdasarkan prediksi terakhir.</p>
         </div>
         <form class="prioritas-mahasiswa__pencarian" action="{{ url_for('mahasiswa') }}" method="get" role="search">
           <label class="visually-hidden" for="pencarian-mahasiswa">Cari mahasiswa</label>
@@ -104,8 +104,8 @@
                 <tr>
                   <td>{{ item.nama or "Nama belum diisi" }}</td>
                   <td>{{ item.id_mahasiswa }}</td>
-                  <td>{% if item.versi_model == 'v2.0' %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
-                  <td><span class="badge-kategori badge-kategori--berisiko-tinggi"><span class="badge-kategori__ikon" aria-hidden="true"></span>Berisiko Tinggi</span></td>
+                  <td>{% if item.versi_model.startswith('v2.') %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
+                  <td><span class="badge-kategori badge-kategori--berisiko-tinggi"><span class="badge-kategori__ikon" aria-hidden="true"></span>Berisiko</span></td>
                   <td>{{ item.status_tindak_lanjut }}</td>
                   <td><a href="{{ url_for('detail_mahasiswa', id_mahasiswa=item.id) }}">Detail</a></td>
                 </tr>
@@ -121,7 +121,7 @@
       {% endif %}
       <div class="prioritas-mahasiswa__aksi">
         <a class="tombol tombol--sekunder" href="{{ url_for('mahasiswa') }}">Lihat semua</a>
-        <a class="tombol tombol--primer" href="{{ url_for('mahasiswa', kategori='Berisiko Tinggi') }}">Tinjau risiko</a>
+        <a class="tombol tombol--primer" href="{{ url_for('mahasiswa', kategori='Berisiko') }}">Tinjau risiko</a>
       </div>
     </section>
 
