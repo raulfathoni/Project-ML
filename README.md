@@ -3,8 +3,7 @@
 Aplikasi web Flask untuk membantu dosen wali dan staf akademik memperkirakan risiko
 Dropout mahasiswa menggunakan model Gradient Boosting Classifier yang sudah
 disediakan. Aplikasi menampilkan probabilitas risiko, kategori, faktor utama, dan
-rekomendasi intervensi. Prediksi
-merupakan pendukung keputusan, bukan keputusan otomatis.
+rekomendasi intervensi. Prediksi merupakan pendukung keputusan, bukan keputusan otomatis.
 
 ## Persyaratan
 

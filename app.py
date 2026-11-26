@@ -110,6 +110,15 @@ def _format_nilai(nilai):
     return f"{float(nilai):.2f}".replace(".", ",")
 
 
+def kepentingan_semua_model(layanan):
+    """Susun kepentingan seluruh fitur model berdasarkan urutan kepentingannya."""
+    daftar = [
+        {"fitur": fitur, "nilai": float(nilai)}
+        for fitur, nilai in zip(layanan.fitur, layanan.model.feature_importances_)
+    ]
+    return sorted(daftar, key=lambda item: item["nilai"], reverse=True)
+
+
 def _status_biner(nilai, label_ya, label_tidak):
     angka = float(nilai)
     if angka == 1:
@@ -467,6 +476,7 @@ def create_app(config=None):
         layanan = app.config["LAYANAN"]
         metadata = layanan.metadata
         metrik = metadata["metrik"]
+        kepentingan_model = kepentingan_semua_model(layanan)
         return render_template(
             "informasi_model.html",
             versi_model=metadata["versi_model"],
@@ -478,7 +488,8 @@ def create_app(config=None):
             recall_dropout=metrik["test"]["Recall"],
             precision_dropout=metrik["test"]["Precision"],
             proporsi_berisiko=metrik["test"]["Ditandai"],
-            kepentingan_model=layanan.kepentingan_global,
+            kepentingan_model=kepentingan_model,
+            jumlah_kepentingan=len(kepentingan_model),
             label_fitur=LABEL_FITUR,
         )
 
