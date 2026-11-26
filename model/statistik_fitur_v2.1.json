@@ -1,0 +1,186 @@
+{
+  "Course": {
+    "min": 33.0,
+    "max": 9991.0,
+    "median": 9238.0,
+    "modus": 9500.0,
+    "q1": 9085.0,
+    "q3": 9556.0,
+    "nilai_unik": [
+      33.0,
+      171.0,
+      8014.0,
+      9003.0,
+      9070.0,
+      9085.0,
+      9119.0,
+      9130.0,
+      9147.0,
+      9238.0,
+      9254.0,
+      9500.0,
+      9556.0,
+      9670.0,
+      9773.0,
+      9853.0,
+      9991.0
+    ]
+  },
+  "Previous qualification (grade)": {
+    "min": 95.0,
+    "max": 190.0,
+    "median": 133.1,
+    "modus": 133.1,
+    "q1": 125.0,
+    "q3": 140.0
+  },
+  "Mother's occupation": {
+    "min": 0.0,
+    "max": 194.0,
+    "median": 5.0,
+    "modus": 9.0,
+    "q1": 4.0,
+    "q3": 9.0,
+    "nilai_unik": [
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      90.0,
+      99.0,
+      122.0,
+      123.0,
+      131.0,
+      132.0,
+      134.0,
+      141.0,
+      143.0,
+      144.0,
+      151.0,
+      152.0,
+      153.0,
+      171.0,
+      173.0,
+      175.0,
+      191.0,
+      192.0,
+      193.0,
+      194.0
+    ]
+  },
+  "Admission grade": {
+    "min": 95.0,
+    "max": 190.0,
+    "median": 126.0,
+    "modus": 140.0,
+    "q1": 117.8,
+    "q3": 135.0
+  },
+  "Debtor": {
+    "min": 0.0,
+    "max": 1.0,
+    "median": 0.0,
+    "modus": 0.0,
+    "q1": 0.0,
+    "q3": 0.0,
+    "nilai_unik": [
+      0.0,
+      1.0
+    ]
+  },
+  "Tuition fees up to date": {
+    "min": 0.0,
+    "max": 1.0,
+    "median": 1.0,
+    "modus": 1.0,
+    "q1": 1.0,
+    "q3": 1.0,
+    "nilai_unik": [
+      0.0,
+      1.0
+    ]
+  },
+  "Scholarship holder": {
+    "min": 0.0,
+    "max": 1.0,
+    "median": 0.0,
+    "modus": 0.0,
+    "q1": 0.0,
+    "q3": 1.0,
+    "nilai_unik": [
+      0.0,
+      1.0
+    ]
+  },
+  "Age at enrollment": {
+    "min": 17.0,
+    "max": 70.0,
+    "median": 20.0,
+    "modus": 18.0,
+    "q1": 19.0,
+    "q3": 25.0
+  },
+  "Curricular units 1st sem (credited)": {
+    "min": 0.0,
+    "max": 20.0,
+    "median": 0.0,
+    "modus": 0.0,
+    "q1": 0.0,
+    "q3": 0.0
+  },
+  "Curricular units 1st sem (enrolled)": {
+    "min": 0.0,
+    "max": 26.0,
+    "median": 6.0,
+    "modus": 6.0,
+    "q1": 5.0,
+    "q3": 7.0
+  },
+  "Curricular units 1st sem (evaluations)": {
+    "min": 0.0,
+    "max": 45.0,
+    "median": 8.0,
+    "modus": 8.0,
+    "q1": 6.0,
+    "q3": 10.0
+  },
+  "Curricular units 1st sem (approved)": {
+    "min": 0.0,
+    "max": 26.0,
+    "median": 5.0,
+    "modus": 6.0,
+    "q1": 3.0,
+    "q3": 6.0
+  },
+  "Curricular units 1st sem (grade)": {
+    "min": 0.0,
+    "max": 18.875,
+    "median": 12.333333333333334,
+    "modus": 0.0,
+    "q1": 11.0,
+    "q3": 13.4
+  },
+  "Unemployment rate": {
+    "min": 7.6,
+    "max": 16.2,
+    "median": 11.1,
+    "modus": 7.6,
+    "q1": 9.4,
+    "q3": 13.9
+  },
+  "GDP": {
+    "min": -4.06,
+    "max": 3.51,
+    "median": 0.32,
+    "modus": 0.32,
+    "q1": -1.7,
+    "q3": 1.79
+  }
+}

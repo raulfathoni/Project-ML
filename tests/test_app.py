@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from app import create_app
+from app import LABEL_FITUR, create_app
 from auth import PembatasPercobaanLogin, login_wajib
 from config import Config
 from database import (
@@ -146,8 +146,11 @@ def test_halaman_informasi_model_menampilkan_metadata_metrik_dan_keterbatasan(ap
     assert "data politeknik di Portugal" in html
     assert "belum divalidasi pada data kampus ini" in html
     assert "Hasil ini pendukung keputusan, bukan keputusan otomatis." in html
-    assert "Faktor dominan model" in html
+    assert f'Semua {len(layanan.fitur)} faktor model' in html
     assert "bukan pengaruh khusus untuk seorang mahasiswa" in html
+    assert len(layanan.fitur) == 26
+    for fitur in layanan.fitur:
+        assert LABEL_FITUR.get(fitur, fitur) in html
 
 
 def test_model_gradient_boosting_menghasilkan_probabilitas_dropout(app):
