@@ -15,7 +15,7 @@
 
     <section class="detail-ringkasan">
       <article class="ringkasan-kartu">
-        {% if mahasiswa.versi_model == 'v2.0' %}
+        {% if mahasiswa.versi_model.startswith('v2.') %}
           <h2 class="ringkasan-kartu__label">Probabilitas Dropout</h2>
           <p class="ringkasan-kartu__nilai">{{ "%.1f"|format(mahasiswa.nilai_prediksi) }}<small>%</small></p>
         {% else %}
@@ -23,7 +23,7 @@
           <p class="ringkasan-kartu__nilai">{{ "%.2f"|format(mahasiswa.nilai_prediksi) }} <small>/ 20</small></p>
         {% endif %}
       </article>
-      <article class="ringkasan-kartu {% if mahasiswa.kategori == 'Berisiko Tinggi' %}ringkasan-kartu--risiko{% else %}ringkasan-kartu--normal{% endif %}">
+      <article class="ringkasan-kartu {% if mahasiswa.kategori == 'Berisiko' %}ringkasan-kartu--risiko{% else %}ringkasan-kartu--normal{% endif %}">
         <h2 class="ringkasan-kartu__label">Kategori risiko</h2>
         <p class="ringkasan-kartu__nilai">{{ mahasiswa.kategori }}</p>
       </article>

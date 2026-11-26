@@ -24,7 +24,7 @@
           <label class="input-label" for="filter-kategori-mahasiswa">Kategori risiko</label>
           <select class="input-kontrol" id="filter-kategori-mahasiswa" name="kategori">
             <option value="" {% if not filter_kategori %}selected{% endif %}>Semua kategori</option>
-            <option value="Berisiko Tinggi" {% if filter_kategori == "Berisiko Tinggi" %}selected{% endif %}>Berisiko Tinggi</option>
+            <option value="Berisiko" {% if filter_kategori == "Berisiko" %}selected{% endif %}>Berisiko</option>
             <option value="Normal" {% if filter_kategori == "Normal" %}selected{% endif %}>Normal</option>
           </select>
         </div>
@@ -70,10 +70,10 @@
                 <tr>
                   <td>{{ item.nama or "Nama belum diisi" }}</td>
                   <td>{{ item.id_mahasiswa }}</td>
-                  <td>{% if item.versi_model == 'v2.0' %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
+                  <td>{% if item.versi_model.startswith('v2.') %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
                   <td>
-                    {% if item.kategori == "Berisiko Tinggi" %}
-                      <span class="badge-kategori badge-kategori--berisiko-tinggi">Berisiko Tinggi</span>
+                    {% if item.kategori == "Berisiko" %}
+                      <span class="badge-kategori badge-kategori--berisiko-tinggi">Berisiko</span>
                     {% else %}
                       <span class="badge-kategori badge-kategori--normal">Normal</span>
                     {% endif %}

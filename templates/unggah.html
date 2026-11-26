@@ -66,7 +66,7 @@
             <p class="ringkasan-kartu__nilai">{{ jumlah_baris }}</p>
           </article>
           <article class="ringkasan-kartu ringkasan-kartu--risiko">
-            <h3 class="ringkasan-kartu__label">Berisiko tinggi</h3>
+            <h3 class="ringkasan-kartu__label">Berisiko</h3>
             <p class="ringkasan-kartu__nilai">{{ jumlah_tinggi }}</p>
           </article>
           <article class="ringkasan-kartu ringkasan-kartu--normal">
@@ -95,7 +95,7 @@
           <label class="input-label" for="filter-kategori">Filter kategori</label>
           <select class="input-kontrol" id="filter-kategori">
             <option value="">Semua kategori</option>
-            <option value="Berisiko Tinggi">Berisiko Tinggi</option>
+            <option value="Berisiko">Berisiko</option>
             <option value="Normal">Normal</option>
           </select>
         </div>
@@ -120,10 +120,10 @@
                   <td>{{ item.id }}</td>
                   <td>{{ "%.1f"|format(item.nilai_prediksi) }}%</td>
                   <td>
-                    {% if item.kategori == "Berisiko Tinggi" %}
+                    {% if item.kategori == "Berisiko" %}
                       <span class="badge-kategori badge-kategori--berisiko-tinggi">
                         <span class="badge-kategori__ikon" aria-hidden="true"></span>
-                        Berisiko Tinggi
+                        Berisiko
                       </span>
                     {% else %}
                       <span class="badge-kategori badge-kategori--normal">

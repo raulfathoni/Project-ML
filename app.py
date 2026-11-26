@@ -49,7 +49,6 @@ FITUR_UTAMA = (
     "Curricular units 1st sem (evaluations)",
     "Curricular units 1st sem (approved)",
     "Curricular units 1st sem (grade)",
-    "Curricular units 1st sem (without evaluations)",
     "Tuition fees up to date",
     "Debtor",
     "Scholarship holder",
@@ -134,7 +133,6 @@ def _sinyal_mahasiswa(fitur):
         "Curricular units 1st sem (enrolled)",
         "Curricular units 1st sem (approved)",
         "Curricular units 1st sem (grade)",
-        "Curricular units 1st sem (without evaluations)",
         "Tuition fees up to date",
         "Debtor",
         "Scholarship holder",
@@ -144,29 +142,33 @@ def _sinyal_mahasiswa(fitur):
 
     jumlah_diambil = fitur["Curricular units 1st sem (enrolled)"]
     jumlah_lulus = fitur["Curricular units 1st sem (approved)"]
-    tanpa_evaluasi = fitur["Curricular units 1st sem (without evaluations)"]
-    return {
-        "akademik": [
-            {
-                "label": "Mata kuliah yang diambil",
-                "nilai": f"{_format_angka(jumlah_diambil)} unit",
-            },
-            {
-                "label": "Mata kuliah yang lulus",
-                "nilai": (
-                    f"{_format_angka(jumlah_lulus)} dari "
-                    f"{_format_angka(jumlah_diambil)} unit"
-                ),
-            },
-            {
-                "label": "Nilai rata-rata semester 1",
-                "nilai": f"{_format_nilai(fitur['Curricular units 1st sem (grade)'])} / 20",
-            },
+    akademik = [
+        {
+            "label": "Mata kuliah yang diambil",
+            "nilai": f"{_format_angka(jumlah_diambil)} unit",
+        },
+        {
+            "label": "Mata kuliah yang lulus",
+            "nilai": (
+                f"{_format_angka(jumlah_lulus)} dari "
+                f"{_format_angka(jumlah_diambil)} unit"
+            ),
+        },
+        {
+            "label": "Nilai rata-rata semester 1",
+            "nilai": f"{_format_nilai(fitur['Curricular units 1st sem (grade)'])} / 20",
+        },
+    ]
+    tanpa_evaluasi = fitur.get("Curricular units 1st sem (without evaluations)")
+    if tanpa_evaluasi is not None:
+        akademik.append(
             {
                 "label": "Mata kuliah tanpa evaluasi",
                 "nilai": f"{_format_angka(tanpa_evaluasi)} unit",
-            },
-        ],
+            }
+        )
+    return {
+        "akademik": akademik,
         "keuangan": [
             {
                 "label": "Pembayaran kuliah",
@@ -439,7 +441,7 @@ def create_app(config=None):
                     db_path=app.config["DATABASE_PATH"],
                 ),
                 jumlah_csv_berisiko=hitung_riwayat(
-                    "Berisiko Tinggi",
+                    "Berisiko",
                     "csv",
                     db_path=app.config["DATABASE_PATH"],
                 ),
@@ -463,7 +465,7 @@ def create_app(config=None):
             mahasiswa_prioritas=daftar_mahasiswa(
                 5,
                 0,
-                filter_kategori="Berisiko Tinggi",
+                filter_kategori="Berisiko",
                 db_path=app.config["DATABASE_PATH"],
             ),
         )
@@ -499,7 +501,7 @@ def create_app(config=None):
         filter_kategori = request.args.get("kategori", "")
         filter_status = request.args.get("status", "")
         pencarian = request.args.get("q", "").strip()
-        if filter_kategori not in ("", "Berisiko Tinggi", "Normal"):
+        if filter_kategori not in ("", "Berisiko", "Normal"):
             flash("Filter kategori tidak valid.", "warning")
             filter_kategori = ""
         status_valid = ("", "aktif", *STATUS_TINDAK_LANJUT)
@@ -598,7 +600,7 @@ def create_app(config=None):
     def riwayat():
         filter_kategori = request.args.get("kategori", "")
         filter_sumber = request.args.get("sumber", "")
-        if filter_kategori not in ("", "Berisiko Tinggi", "Normal"):
+        if filter_kategori not in ("", "Berisiko", "Normal"):
             flash("Filter kategori tidak valid.", "warning")
             filter_kategori = ""
         if filter_sumber not in ("", "formulir", "csv"):
@@ -974,7 +976,7 @@ def create_app(config=None):
             peringatan=peringatan,
             jumlah_baris=len(baris_hasil),
             jumlah_tinggi=sum(
-                item["kategori"] == "Berisiko Tinggi" for item in baris_hasil
+                item["kategori"] == "Berisiko" for item in baris_hasil
             ),
             jumlah_normal=sum(item["kategori"] == "Normal" for item in baris_hasil),
             id_batch=id_batch,

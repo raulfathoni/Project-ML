@@ -17,5 +17,5 @@ class Config:
     SESSION_COOKIE_SAMESITE = "Lax"
     DATABASE_PATH = BASE_DIR / "instance" / "ews.sqlite3"
     KAMUS_KODE_PATH = BASE_DIR / "kamus_kode.json"
-    MODEL_PATH = BASE_DIR / "model" / "ews_gb_v2.0.joblib"
-    STATISTIK_PATH = BASE_DIR / "model" / "statistik_fitur_v2.0.json"
+    MODEL_PATH = BASE_DIR / "model" / "ews_gb_v2.1.joblib"
+    STATISTIK_PATH = BASE_DIR / "model" / "statistik_fitur_v2.1.json"

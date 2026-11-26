@@ -98,8 +98,8 @@ class LayananPrediksi:
 
     def kategori(self, nilai):
         if self.klasifikasi:
-            return np.where(np.asarray(nilai) >= self.t_tinggi, 'Berisiko Tinggi', 'Normal')
-        return np.where(np.asarray(nilai) < self.t_tinggi, 'Berisiko Tinggi', 'Normal')
+            return np.where(np.asarray(nilai) >= self.t_tinggi, 'Berisiko', 'Normal')
+        return np.where(np.asarray(nilai) < self.t_tinggi, 'Berisiko', 'Normal')
 
     def prediksi(self, x):
         mentah = self._nilai_prediksi(x)

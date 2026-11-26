@@ -4,6 +4,7 @@ Aplikasi web Flask untuk membantu dosen wali dan staf akademik memperkirakan ris
 Dropout mahasiswa menggunakan model Gradient Boosting Classifier yang sudah
 disediakan. Aplikasi menampilkan probabilitas risiko, kategori, faktor utama, dan
 rekomendasi intervensi. Prediksi merupakan pendukung keputusan, bukan keputusan otomatis.
+Model versi v2.1 menggunakan 15 fitur.
 
 ## Persyaratan
 
@@ -103,7 +104,7 @@ python -m pytest
 
 - `app.py`: aplikasi Flask dan rute web.
 - `layanan_prediksi.py`: validasi dan pemrosesan prediksi.
-- `model/ews_gb_v2.0.joblib`: model Gradient Boosting Classifier.
-- `model/statistik_fitur_v2.0.json`: statistik fitur yang digunakan aplikasi.
+- `model/ews_gb_v2.1.joblib`: model Gradient Boosting Classifier dengan 15 fitur.
+- `model/statistik_fitur_v2.1.json`: statistik 15 fitur yang digunakan aplikasi.
 - `templates/` dan `static/`: antarmuka web.
 - `instance/ews.sqlite3`: basis data lokal yang dibuat saat aplikasi mulai.

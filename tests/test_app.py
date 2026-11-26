@@ -68,7 +68,7 @@ def _isi_riwayat(app, jumlah):
                     f"pseudo-{indeks:02d}",
                     "v1.0",
                     float(indeks),
-                    "Normal" if indeks % 2 else "Berisiko Tinggi",
+                    "Normal" if indeks % 2 else "Berisiko",
                     '[{"fitur":"RAHASIA_INPUT","dampak":1.0}]',
                     "csv" if indeks % 3 else "formulir",
                     None,
@@ -125,6 +125,7 @@ def test_halaman_informasi_model_menampilkan_metadata_metrik_dan_keterbatasan(ap
 
     assert respons.status_code == 200
     assert metadata["algoritma"] == "GradientBoostingClassifier"
+    assert metadata["versi_model"] == "v2.1"
     for nilai in (
         metadata["versi_model"],
         metadata["tanggal_pelatihan"],
@@ -148,7 +149,8 @@ def test_halaman_informasi_model_menampilkan_metadata_metrik_dan_keterbatasan(ap
     assert "Hasil ini pendukung keputusan, bukan keputusan otomatis." in html
     assert f'Semua {len(layanan.fitur)} faktor model' in html
     assert "bukan pengaruh khusus untuk seorang mahasiswa" in html
-    assert len(layanan.fitur) == 26
+    assert len(layanan.fitur) == 15
+    assert set(layanan.fitur) == set(layanan.stat)
     for fitur in layanan.fitur:
         assert LABEL_FITUR.get(fitur, fitur) in html
 
@@ -170,7 +172,7 @@ def test_model_gradient_boosting_menghasilkan_probabilitas_dropout(app):
     assert not galat
     assert hasil.iloc[0]["nilai_prediksi"] == pytest.approx(round(probabilitas, 2))
     assert hasil.iloc[0]["kategori"] == (
-        "Berisiko Tinggi"
+        "Berisiko"
         if probabilitas >= layanan.t_tinggi
         else "Normal"
     )
@@ -373,10 +375,10 @@ def test_form_individu_menghasilkan_prediksi_berisiko_dan_menyimpan_pseudonim(ap
     riwayat = daftar_riwayat(10, 0, db_path=app.config["DATABASE_PATH"])
 
     assert respons.status_code == 200
-    assert "Berisiko Tinggi" in html
+    assert "Berisiko" in html
     assert "Faktor yang paling memengaruhi prediksi mahasiswa ini" not in html
     assert "Rekomendasi" in html
-    assert "17 field lanjutan memakai nilai awal." in html
+    assert "7 field lanjutan memakai nilai awal." in html
     assert len(riwayat) == 1
     assert riwayat[0]["id_pseudonim"] == pseudonim("MHS-123", "salt-uji")
     assert riwayat[0]["id_pseudonim"] != "MHS-123"
@@ -483,7 +485,6 @@ def test_form_individu_mengisi_data_lanjutan_yang_tidak_dikirim_dengan_nilai_awa
         "Curricular units 1st sem (evaluations)",
         "Curricular units 1st sem (approved)",
         "Curricular units 1st sem (grade)",
-        "Curricular units 1st sem (without evaluations)",
         "Tuition fees up to date",
         "Debtor",
         "Scholarship holder",
@@ -493,8 +494,8 @@ def test_form_individu_mengisi_data_lanjutan_yang_tidak_dikirim_dengan_nilai_awa
     respons = client.post("/individu", data=data)
 
     assert respons.status_code == 200
-    assert "Berisiko Tinggi" in respons.get_data(as_text=True)
-    assert "17 field lanjutan memakai nilai awal." in respons.get_data(as_text=True)
+    assert "Berisiko" in respons.get_data(as_text=True)
+    assert "7 field lanjutan memakai nilai awal." in respons.get_data(as_text=True)
 
 
 def test_form_individu_menampilkan_peringatan_di_luar_rentang(app):
@@ -561,13 +562,13 @@ def test_formulir_menampilkan_bantuan_kode_dan_data_lanjutan_tertutup(app):
     assert respons.status_code == 200
     assert "kode sesuai dokumentasi dataset" in html
     assert "<details class=\"kartu data-lanjutan\"" in html
-    assert "Application mode" in html
+    assert "Course" in html
 
 
 def test_kamus_kode_mengubah_kolom_nominal_menjadi_dropdown(app, tmp_path):
     kamus_path = tmp_path / "kamus_kode.json"
     kamus_path.write_text(
-        '{"Application mode": {"1": "Aplikasi umum"}}',
+        '{"Course": {"9991": "Program Pendidikan"}}',
         encoding="utf-8",
     )
     app_dengan_kamus = create_app(
@@ -590,18 +591,23 @@ def test_kamus_kode_mengubah_kolom_nominal_menjadi_dropdown(app, tmp_path):
     respons = client.get("/individu")
 
     assert respons.status_code == 200
-    assert 'name="Application mode"' in respons.get_data(as_text=True)
-    assert "Aplikasi umum" in respons.get_data(as_text=True)
+    assert 'name="Course"' in respons.get_data(as_text=True)
+    assert "Program Pendidikan" in respons.get_data(as_text=True)
 
 
 def test_unggah_csv_valid_mempertahankan_urutan_dan_menyimpan_batch(app):
     client = app.test_client()
     _masuk_staf(client)
+    layanan = app.config["LAYANAN"]
     jalur_csv = (
         Path(__file__).resolve().parents[1]
         / "contoh_uji"
         / "contoh_unggah_valid.csv"
     )
+    with jalur_csv.open(encoding="utf-8-sig", newline="") as berkas:
+        header = next(csv.reader(berkas))
+
+    assert header == [*layanan.fitur, "id_mahasiswa"]
 
     with jalur_csv.open("rb") as berkas:
         respons = client.post(
@@ -615,7 +621,7 @@ def test_unggah_csv_valid_mempertahankan_urutan_dan_menyimpan_batch(app):
     assert respons.status_code == 200
     assert "60 baris diproses." in html
     assert html.count('data-kategori="') == 60
-    assert "Berisiko Tinggi" in html
+    assert "Berisiko" in html
     assert peringkat == list(range(1, 61))
 
     with client.session_transaction() as sesi:
@@ -705,16 +711,22 @@ def test_contoh_demo_csv_konsisten_dan_menghasilkan_prediksi(app):
         baris = list(csv.DictReader(berkas))
 
     assert len(baris) == 6
+    assert list(baris[0]) == [
+        *app.config["LAYANAN"].fitur,
+        "id_mahasiswa",
+        "nama_mahasiswa",
+    ]
     for mahasiswa in baris:
         jumlah_diambil = int(mahasiswa["Curricular units 1st sem (enrolled)"])
         jumlah_dinilai = int(mahasiswa["Curricular units 1st sem (evaluations)"])
         jumlah_lulus = int(mahasiswa["Curricular units 1st sem (approved)"])
-        jumlah_tanpa_evaluasi = int(
-            mahasiswa["Curricular units 1st sem (without evaluations)"]
-        )
         assert jumlah_lulus <= jumlah_diambil
         assert jumlah_lulus <= jumlah_dinilai
-        assert jumlah_tanpa_evaluasi <= jumlah_diambil
+        if "Curricular units 1st sem (without evaluations)" in mahasiswa:
+            jumlah_tanpa_evaluasi = int(
+                mahasiswa["Curricular units 1st sem (without evaluations)"]
+            )
+            assert jumlah_tanpa_evaluasi <= jumlah_diambil
 
     client = app.test_client()
     _masuk_staf(client)
@@ -730,7 +742,7 @@ def test_contoh_demo_csv_konsisten_dan_menghasilkan_prediksi(app):
     assert "6 baris diproses." in html
     assert "Mahasiswa Demo 01" in html
     assert "Normal" in html
-    assert "Berisiko Tinggi" in html
+    assert "Berisiko" in html
 
 
 def test_unggah_menolak_ekstensi_dan_jumlah_baris_tidak_valid(app):

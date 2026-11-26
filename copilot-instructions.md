@@ -1,8 +1,8 @@
 # Proyek: Early Warning System Akademik (Flask)
 
-Aplikasi web untuk dosen wali dan staf akademik. Memprediksi nilai semester 2 mahasiswa
-dengan model Random Forest yang sudah dilatih (jangan melatih ulang atau mengubah model),
-lalu menampilkan kategori risiko, faktor dominan, dan rekomendasi intervensi.
+Aplikasi web untuk dosen wali dan staf akademik. Memperkirakan risiko dropout mahasiswa
+dengan model Gradient Boosting Classifier yang sudah dilatih (jangan melatih ulang atau
+mengubah model), lalu menampilkan kategori risiko, faktor dominan, dan rekomendasi intervensi.
 
 ## Aturan teknis
 - Python + Flask, template Jinja2, Bootstrap 5 dari CDN. Tanpa framework JavaScript. JS seperlunya (vanilla).
@@ -11,9 +11,9 @@ lalu menampilkan kategori risiko, faktor dominan, dan rekomendasi intervensi.
 - JANGAN mengubah `layanan_prediksi.py`. Semua logika prediksi, validasi, kategori, faktor, dan rekomendasi
   dipanggil lewat kelas `LayananPrediksi` (metode `proses(df)` mengembalikan `(hasil, galat, peringatan)`).
 - `LayananPrediksi` dibuat SEKALI saat aplikasi mulai, bukan per permintaan.
-- Daftar 26 fitur selalu diambil dari `layanan.fitur`. Rentang nilai dan nilai default dari `layanan.stat`
+- Daftar 15 fitur model selalu diambil dari `layanan.fitur`. Rentang nilai dan nilai default dari `layanan.stat`
   (min, max, median, modus, nilai_unik). Jangan menulis angka rentang secara manual.
-- Kategori hanya dua: "Berisiko Tinggi" dan "Normal". Hasil terurut dari nilai prediksi terendah (paling berisiko).
+- Kategori hanya dua: "Berisiko" dan "Normal". Hasil terurut dari nilai prediksi terendah (paling berisiko).
 
 ## Peran pengguna
 - `dosen_wali`: akses /individu, /riwayat, /, /unduh
@@ -42,6 +42,6 @@ Peran disimpan di `session`. Rute yang dilindungi memakai dekorator `login_wajib
 - Gunakan HTML semantik (nav, main, form, table, button) dan label untuk setiap input.
 - Bootstrap 5 hanya untuk grid dan perilaku (accordion, alert, modal). Tampilan komponen memakai class
   buatan sendiri di static/css/app.css (struktur: dasar, tata letak, komponen, halaman).
-- Badge kategori jangan hanya berbeda warna: sertakan teks ("Berisiko Tinggi" / "Normal") dan ikon agar terbaca
+- Badge kategori jangan hanya berbeda warna: sertakan teks ("Berisiko" / "Normal") dan ikon agar terbaca
   oleh pengguna buta warna.
 - Jangan mengubah logika Jinja atau rute yang sudah ada saat merapikan tampilan.
