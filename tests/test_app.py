@@ -6,6 +6,7 @@ import sqlite3
 import time
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from app import create_app
@@ -95,7 +96,7 @@ def test_login_berhasil_dan_beranda_dapat_diakses(app):
     assert client.get("/static/css/app.css").status_code == 200
 
 
-def test_beranda_menampilkan_metadata_metrik_dan_keterbatasan(app):
+def test_beranda_tidak_menampilkan_informasi_model(app):
     client = app.test_client()
     client.post(
         "/login",
@@ -103,34 +104,73 @@ def test_beranda_menampilkan_metadata_metrik_dan_keterbatasan(app):
     )
     respons = client.get("/")
     html = respons.get_data(as_text=True)
+
+    assert respons.status_code == 200
+    assert "Informasi model" in html
+    assert "Faktor dominan model" not in html
+    assert "Keterbatasan" not in html
+
+
+def test_halaman_informasi_model_menampilkan_metadata_metrik_dan_keterbatasan(app):
+    client = app.test_client()
+    client.post(
+        "/login",
+        data={"peran": "dosen_wali", "kata_sandi": "sandi-dosen-uji"},
+    )
+    respons = client.get("/informasi-model")
+    html = respons.get_data(as_text=True)
     layanan = app.config["LAYANAN"]
     metadata = layanan.metadata
     metrik = metadata["metrik"]
 
     assert respons.status_code == 200
+    assert metadata["algoritma"] == "GradientBoostingClassifier"
     for nilai in (
         metadata["versi_model"],
         metadata["tanggal_pelatihan"],
         str(metadata["jumlah_fitur"]),
-        f"{layanan.t_tinggi:.1f}",
-        f'{metrik["test"]["MAE"]:.2f}',
-        f'{metrik["test"]["RMSE"]:.2f}',
-        f'{metrik["test"]["R2"]:.2f}',
-        f'{metrik["recall_dropout_test"] * 100:.1f}%',
-        f'{metrik["precision_dropout_test"] * 100:.1f}%',
+        f"{layanan.t_tinggi:.1f}%",
+        f'{metrik["test"]["AUC"]:.2f}',
+        f'{metrik["test"]["PR-AUC"]:.2f}',
+        f'{metrik["test"]["Recall"] * 100:.1f}%',
+        f'{metrik["test"]["Precision"] * 100:.1f}%',
+        f'{metrik["test"]["Ditandai"] * 100:.1f}%',
     ):
         assert nilai in html
 
     assert "Keterbatasan" in html
-    assert "Sekitar 4 dari 10 mahasiswa ditandai" in html
-    assert "sekitar 38% dari mahasiswa yang ditandai bukan Dropout" in html
-    assert "terdeteksi sekitar 64%" in html
+    assert f'Sekitar {metrik["test"]["Ditandai"] * 100:.0f}% mahasiswa ditandai berisiko' in html
+    assert f'{(1 - metrik["test"]["Precision"]) * 100:.0f}% dari yang ditandai bukan Dropout' in html
+    assert f'mendeteksi sekitar {metrik["test"]["Recall"] * 100:.0f}%' in html
     assert "bukan hubungan sebab-akibat" in html
     assert "data politeknik di Portugal" in html
     assert "belum divalidasi pada data kampus ini" in html
     assert "Hasil ini pendukung keputusan, bukan keputusan otomatis." in html
     assert "Faktor dominan model" in html
     assert "bukan pengaruh khusus untuk seorang mahasiswa" in html
+
+
+def test_model_gradient_boosting_menghasilkan_probabilitas_dropout(app):
+    layanan = app.config["LAYANAN"]
+    data = _data_individu(
+        app,
+        **{"Curricular units 1st sem (approved)": 0},
+    )
+    frame = pd.DataFrame([data])
+
+    hasil, galat, _ = layanan.proses(frame)
+
+    probabilitas = (
+        layanan.model.predict_proba(frame[layanan.fitur])[0, layanan.indeks_risiko]
+        * 100
+    )
+    assert not galat
+    assert hasil.iloc[0]["nilai_prediksi"] == pytest.approx(round(probabilitas, 2))
+    assert hasil.iloc[0]["kategori"] == (
+        "Berisiko Tinggi"
+        if probabilitas >= layanan.t_tinggi
+        else "Normal"
+    )
 
 
 def test_login_salah_tidak_membuat_sesi(app):
@@ -414,7 +454,7 @@ def test_dashboard_staf_berbeda_dan_rute_mahasiswa_dibatasi(app):
 
     assert dashboard.status_code == 200
     assert "Pemantauan data akademik" in dashboard.get_data(as_text=True)
-    assert "Faktor dominan model" in dashboard.get_data(as_text=True)
+    assert "Faktor dominan model" not in dashboard.get_data(as_text=True)
     assert "Dashboard pemantauan" not in dashboard.get_data(as_text=True)
     assert "Unggah data CSV" in html_dashboard
     assert "Riwayat CSV" in html_dashboard

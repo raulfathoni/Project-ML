@@ -69,8 +69,7 @@
       </article>
     </section>
 
-    <div class="dashboard-panel-grid">
-      <section class="kartu distribusi-risiko" aria-labelledby="judul-distribusi-csv">
+    <section class="kartu distribusi-risiko" aria-labelledby="judul-distribusi-csv">
         <div>
           <h2 class="kartu__judul" id="judul-distribusi-csv">Peta hasil unggahan CSV</h2>
           <p>Distribusi kategori dari seluruh hasil prediksi CSV tersimpan.</p>
@@ -87,20 +86,7 @@
           <span><i class="distribusi-risiko__titik distribusi-risiko__titik--tinggi"></i> Berisiko Tinggi: {{ jumlah_csv_berisiko }}</span>
           <span><i class="distribusi-risiko__titik distribusi-risiko__titik--normal"></i> Normal: {{ jumlah_csv_normal }}</span>
         </div>
-      </section>
-
-      <aside class="model-panel" aria-label="Ringkasan model">
-        <span class="model-panel__label">Model pembelajaran</span>
-        <h2>Random Forest Regressor</h2>
-        <p>Prediksi nilai semester kedua secara berkelompok.</p>
-        <dl>
-          <div><dd>{{ jumlah_fitur }}</dd><dt>Jumlah fitur</dt></div>
-          <div><dd>{{ jumlah_csv }}</dd><dt>Hasil CSV</dt></div>
-          <div><dd>&lt; {{ "%.1f"|format(ambang_risiko) }}</dd><dt>Ambang risiko</dt></div>
-        </dl>
-        <a href="#informasi-model">ⓘ Lihat info model</a>
-      </aside>
-    </div>
+    </section>
 
     <section class="kartu prioritas-mahasiswa" aria-labelledby="judul-riwayat-csv">
       <div class="bagian-dashboard__kepala prioritas-mahasiswa__kepala">
@@ -117,7 +103,7 @@
               <tr>
                 <th scope="col">ID pseudonim</th>
                 <th scope="col">Waktu</th>
-                <th scope="col">Nilai prediksi</th>
+                <th scope="col">Skor prediksi</th>
                 <th scope="col">Kategori</th>
               </tr>
             </thead>
@@ -126,7 +112,7 @@
                 <tr>
                   <td>{{ item.id_pseudonim or "Tidak dicantumkan" }}</td>
                   <td><time datetime="{{ item.waktu }}">{{ item.waktu }}</time></td>
-                  <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
+                  <td>{% if item.versi_model == 'v2.0' %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
                   <td>
                     {% if item.kategori == "Berisiko Tinggi" %}
                       <span class="badge-kategori badge-kategori--berisiko-tinggi"><span class="badge-kategori__ikon" aria-hidden="true"></span>Berisiko Tinggi</span>
@@ -147,19 +133,5 @@
       {% endif %}
     </section>
 
-    <section class="bagian-dashboard" id="informasi-model" aria-labelledby="judul-informasi-model">
-      <div class="bagian-dashboard__kepala">
-        <h2 id="judul-informasi-model">Informasi model</h2>
-        <p>Ringkasan versi dan evaluasi model prediksi.</p>
-      </div>
-      <dl class="metrik-grid">
-        <div class="metrik-kartu"><dt>Versi model</dt><dd>{{ versi_model }}</dd></div>
-        <div class="metrik-kartu"><dt>Tanggal pelatihan</dt><dd>{{ tanggal_pelatihan }}</dd></div>
-        <div class="metrik-kartu"><dt>MAE</dt><dd>{{ "%.2f"|format(metrik_test["MAE"]) }}</dd></div>
-        <div class="metrik-kartu"><dt>RMSE</dt><dd>{{ "%.2f"|format(metrik_test["RMSE"]) }}</dd></div>
-        <div class="metrik-kartu"><dt>R²</dt><dd>{{ "%.2f"|format(metrik_test["R2"]) }}</dd></div>
-      </dl>
-      {% include "_kepentingan_model.html" %}
-    </section>
   </div>
 {% endblock %}

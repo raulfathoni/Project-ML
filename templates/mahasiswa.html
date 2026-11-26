@@ -59,7 +59,7 @@
               <tr>
                 <th scope="col">Mahasiswa</th>
                 <th scope="col">ID</th>
-                <th scope="col">Prediksi semester 2</th>
+                <th scope="col">Prediksi terakhir</th>
                 <th scope="col">Kategori risiko</th>
                 <th scope="col">Tindak lanjut</th>
                 <th scope="col">Aksi</th>
@@ -70,7 +70,7 @@
                 <tr>
                   <td>{{ item.nama or "Nama belum diisi" }}</td>
                   <td>{{ item.id_mahasiswa }}</td>
-                  <td>{{ "%.2f"|format(item.nilai_prediksi) }}</td>
+                  <td>{% if item.versi_model == 'v2.0' %}{{ "%.1f"|format(item.nilai_prediksi) }}%{% else %}{{ "%.2f"|format(item.nilai_prediksi) }}{% endif %}</td>
                   <td>
                     {% if item.kategori == "Berisiko Tinggi" %}
                       <span class="badge-kategori badge-kategori--berisiko-tinggi">Berisiko Tinggi</span>

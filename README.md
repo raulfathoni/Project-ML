@@ -1,8 +1,9 @@
 # Early Warning System Akademik
 
 Aplikasi web Flask untuk membantu dosen wali dan staf akademik memperkirakan risiko
-akademik mahasiswa menggunakan model Random Forest yang sudah disediakan. Aplikasi
-menampilkan kategori risiko, faktor utama, dan rekomendasi intervensi. Prediksi
+Dropout mahasiswa menggunakan model Gradient Boosting Classifier yang sudah
+disediakan. Aplikasi menampilkan probabilitas risiko, kategori, faktor utama, dan
+rekomendasi intervensi. Prediksi
 merupakan pendukung keputusan, bukan keputusan otomatis.
 
 ## Persyaratan
@@ -67,6 +68,11 @@ ditujukan untuk penggunaan lokal. Untuk deployment, gunakan server aplikasi
 yang sesuai dan HTTPS; konfigurasi cookie sesi aplikasi menggunakan atribut
 `Secure`.
 
+Reset riwayat prediksi
+```powershell
+python -c "import sqlite3; db='instance/ews.sqlite3'; c=sqlite3.connect(db); c.executescript('DELETE FROM tindak_lanjut; DELETE FROM mahasiswa; DELETE FROM riwayat_prediksi;'); c.commit(); c.close(); print('Riwayat berhasil direset')"
+```
+
 ## Masuk dan menggunakan aplikasi
 
 Pada halaman masuk, pilih peran dan masukkan kata sandi yang telah diatur:
@@ -98,7 +104,7 @@ python -m pytest
 
 - `app.py`: aplikasi Flask dan rute web.
 - `layanan_prediksi.py`: validasi dan pemrosesan prediksi.
-- `model/ews_rf_v1.0.joblib`: model Random Forest.
-- `model/statistik_fitur_v1.0.json`: statistik fitur yang digunakan aplikasi.
+- `model/ews_gb_v2.0.joblib`: model Gradient Boosting Classifier.
+- `model/statistik_fitur_v2.0.json`: statistik fitur yang digunakan aplikasi.
 - `templates/` dan `static/`: antarmuka web.
 - `instance/ews.sqlite3`: basis data lokal yang dibuat saat aplikasi mulai.

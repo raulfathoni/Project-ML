@@ -422,9 +422,6 @@ def create_app(config=None):
     @app.route("/")
     @login_wajib()
     def beranda():
-        layanan = app.config["LAYANAN"]
-        metadata = layanan.metadata
-        metrik = metadata["metrik"]
         if session["peran"] == "staf_akademik":
             return render_template(
                 "beranda_staf.html",
@@ -442,13 +439,6 @@ def create_app(config=None):
                     "csv",
                     db_path=app.config["DATABASE_PATH"],
                 ),
-                versi_model=metadata["versi_model"],
-                tanggal_pelatihan=metadata["tanggal_pelatihan"],
-                jumlah_fitur=metadata["jumlah_fitur"],
-                ambang_risiko=layanan.t_tinggi,
-                metrik_test=metrik["test"],
-                kepentingan_model=layanan.kepentingan_global,
-                label_fitur=LABEL_FITUR,
                 riwayat_csv=daftar_riwayat(
                     5,
                     0,
@@ -458,15 +448,6 @@ def create_app(config=None):
             )
         return render_template(
             "beranda.html",
-            versi_model=metadata["versi_model"],
-            tanggal_pelatihan=metadata["tanggal_pelatihan"],
-            jumlah_fitur=metadata["jumlah_fitur"],
-            ambang_risiko=layanan.t_tinggi,
-            metrik_test=metrik["test"],
-            recall_dropout=metrik["recall_dropout_test"],
-            precision_dropout=metrik["precision_dropout_test"],
-            kepentingan_model=layanan.kepentingan_global,
-            label_fitur=LABEL_FITUR,
             ringkasan_mahasiswa=ringkasan_mahasiswa(
                 db_path=app.config["DATABASE_PATH"],
             ),
@@ -476,6 +457,29 @@ def create_app(config=None):
                 filter_kategori="Berisiko Tinggi",
                 db_path=app.config["DATABASE_PATH"],
             ),
+        )
+
+    @app.route("/informasi-model")
+    @app.route("/model")
+    @login_wajib()
+    def informasi_model():
+        """Tampilkan metadata, evaluasi, dan kepentingan model."""
+        layanan = app.config["LAYANAN"]
+        metadata = layanan.metadata
+        metrik = metadata["metrik"]
+        return render_template(
+            "informasi_model.html",
+            versi_model=metadata["versi_model"],
+            algoritma=metadata["algoritma"],
+            tanggal_pelatihan=metadata["tanggal_pelatihan"],
+            jumlah_fitur=metadata["jumlah_fitur"],
+            ambang_risiko=layanan.t_tinggi,
+            metrik_test=metrik["test"],
+            recall_dropout=metrik["test"]["Recall"],
+            precision_dropout=metrik["test"]["Precision"],
+            proporsi_berisiko=metrik["test"]["Ditandai"],
+            kepentingan_model=layanan.kepentingan_global,
+            label_fitur=LABEL_FITUR,
         )
 
     @app.get("/mahasiswa")
@@ -751,6 +755,7 @@ def create_app(config=None):
         return render_template(
             "hasil_individu.html",
             nilai_prediksi=float(baris["nilai_prediksi"]),
+            label_nilai_prediksi="Probabilitas Dropout",
             kategori=baris["kategori"],
             rekomendasi=baris["rekomendasi"],
             peringatan=peringatan,
@@ -928,7 +933,7 @@ def create_app(config=None):
         keluaran = io.StringIO(newline="")
         penulis = csv.writer(keluaran)
         penulis.writerow(
-            ["Peringkat", "Nama", "ID", "Nilai prediksi", "Kategori", "Faktor utama"]
+            ["Peringkat", "Nama", "ID", "Probabilitas Dropout (%)", "Kategori", "Faktor utama"]
         )
         for item in baris_hasil:
             penulis.writerow(
@@ -954,6 +959,7 @@ def create_app(config=None):
         return render_template(
             "unggah.html",
             hasil=baris_hasil,
+            label_nilai_prediksi="Probabilitas Dropout (%)",
             peringatan=peringatan,
             jumlah_baris=len(baris_hasil),
             jumlah_tinggi=sum(
@@ -1017,4 +1023,4 @@ def create_app(config=None):
 
 
 if __name__ == "__main__":
-    create_app().run(debug=False)
+    create_app().run(debug=True)

@@ -717,6 +717,10 @@ p {
   gap: var(--jarak-4);
 }
 
+.ringkasan-grid--tiga {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .ringkasan-kartu,
 .metrik-kartu {
   min-width: 0;
@@ -807,12 +811,41 @@ p {
 }
 
 .login-brand {
+  --login-gradien-sudut: 210deg;
+  --login-gradien-warna-awal: var(--warna-arang);
+  --login-gradien-warna-tengah: var(--warna-permukaan-gelap);
+  --login-gradien-warna-akhir: #171d1d;
+  --login-gradien-posisi-tengah: 35%;
+  --login-gradien-blur: 200px;
+
+  position: relative;
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-width: 0;
+  overflow: hidden;
   padding: clamp(var(--jarak-6), 5.3vw, 4rem);
-  background: var(--warna-arang);
+  background: linear-gradient(
+    var(--login-gradien-sudut),
+    var(--login-gradien-warna-awal) 0%,
+    var(--login-gradien-warna-tengah) var(--login-gradien-posisi-tengah),
+    var(--login-gradien-warna-akhir) 100%
+  );
   color: var(--warna-teks-terang);
+}
+
+.login-brand::before {
+  position: absolute;
+  z-index: 0;
+  inset: calc(-1 * var(--login-gradien-blur));
+  background: inherit;
+  content: "";
+  filter: blur(var(--login-gradien-blur));
+  pointer-events: none;
+}
+
+.login-brand > * {
+  position: relative;
+  z-index: 1;
 }
 
 .login-brand__logo {
@@ -919,7 +952,7 @@ p {
 }
 
 .login-panel__content h2 {
-  margin-block-end: var(--jarak-5);
+  margin-block-end: var(--jarak-0);
   font-size: var(--ukuran-teks-22);
 }
 
@@ -928,16 +961,45 @@ p {
   gap: var(--jarak-4);
 }
 
+.login-fields {
+  display: grid;
+  gap: var(--jarak-4);
+  padding: var(--jarak-5) var(--jarak-8);
+  background: var(--warna-permukaan);
+  border: var(--lebar-garis) solid var(--warna-garis-halus);
+  border-radius: var(--sudut-14);
+  box-shadow: 0 0.5rem 1.5rem rgb(39 41 45 / 6%);
+}
+
+.login-fields__heading {
+  display: grid;
+  gap: var(--jarak-2);
+  padding-block-end: var(--jarak-2);
+  border-bottom: var(--lebar-garis) solid var(--warna-garis-halus);
+}
+
+.login-fields__heading .login-eyebrow {
+  margin-block-end: var(--jarak-0);
+  color: var(--warna-primer);
+}
+
 .login-form .input-label {
   font-size: var(--ukuran-teks-12);
 }
 
 .login-form .input-kontrol {
-  min-height: 2.9rem;
+  min-height: 3.5rem;
   padding: var(--jarak-3) var(--jarak-4);
-  background: var(--warna-permukaan);
-  border-color: var(--warna-garis-kontrol);
+  background: var(--warna-permukaan-lembut);
+  border-color: var(--warna-garis-halus);
+  border-radius: var(--sudut-8);
   font-size: var(--ukuran-teks-13);
+}
+
+.login-form .input-kontrol:focus {
+  background: var(--warna-permukaan);
+  border-color: var(--warna-primer);
+  box-shadow: 0 0 0 0.125rem rgb(8 127 115 / 12%);
 }
 
 .login-password {
@@ -955,8 +1017,9 @@ p {
   padding: var(--jarak-2);
   background: transparent;
   border: 0;
-  color: var(--warna-teks);
+  color: var(--warna-primer);
   font-size: var(--ukuran-teks-11);
+  font-weight: var(--ketebalan-teks-semi-tebal);
   cursor: pointer;
 }
 
@@ -969,15 +1032,16 @@ p {
 .login-submit {
   min-height: 2.9rem;
   margin-block-start: var(--jarak-1);
-  background: var(--warna-arang);
-  border-color: var(--warna-arang);
-  border-radius: var(--sudut-23);
+  background: var(--warna-primer);
+  border-color: var(--warna-primer);
+  border-radius: var(--sudut-8);
   color: var(--warna-teks-terang);
   font-size: var(--ukuran-teks-12);
 }
 
 .login-submit:hover {
-  background: var(--warna-permukaan-gelap);
+  background: var(--warna-aman-grafik);
+  border-color: var(--warna-aman-grafik);
   color: var(--warna-teks-terang);
 }
 

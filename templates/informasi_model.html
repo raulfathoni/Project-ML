@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Informasi Model - EWS Akademik{% endblock %}
+
+{% block content %}
+  <div class="dashboard">
+    <nav class="dashboard-breadcrumb" aria-label="Breadcrumb">
+      <span>Ruang {% if session.get('peran') == 'staf_akademik' %}akademik{% else %}dosen wali{% endif %}</span>
+      <span aria-hidden="true">›</span>
+      <strong>Informasi model</strong>
+    </nav>
+
+    <header class="dashboard-header">
+      <div>
+        <h1 class="judul-halaman">Informasi model</h1>
+        <p class="dashboard-header__deskripsi">Ringkasan versi, evaluasi, dan faktor penggunaan model prediksi.</p>
+      </div>
+    </header>
+
+    <aside class="banner-hasil banner-hasil--dashboard" role="note">
+      <span class="banner-hasil__ikon" aria-hidden="true">ⓘ</span>
+      <p class="banner-hasil__teks">Hasil ini pendukung keputusan, bukan keputusan otomatis.</p>
+    </aside>
+
+    <section class="ringkasan-grid ringkasan-grid--tiga" aria-label="Ringkasan model">
+      <article class="ringkasan-kartu">
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Versi model</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">◎</span>
+        </div>
+        <p class="ringkasan-kartu__nilai ringkasan-kartu__nilai--tanggal">{{ versi_model }}</p>
+        <p class="ringkasan-kartu__keterangan">{{ algoritma }}</p>
+      </article>
+      <article class="ringkasan-kartu">
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Tanggal pelatihan</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">◷</span>
+        </div>
+        <p class="ringkasan-kartu__nilai ringkasan-kartu__nilai--tanggal">{{ tanggal_pelatihan }}</p>
+        <p class="ringkasan-kartu__keterangan">{{ jumlah_fitur }} fitur digunakan</p>
+      </article>
+      <article class="ringkasan-kartu">
+        <div class="ringkasan-kartu__kepala">
+          <h2 class="ringkasan-kartu__label">Ambang risiko</h2>
+          <span class="ringkasan-kartu__ikon" aria-hidden="true">△</span>
+        </div>
+        <p class="ringkasan-kartu__nilai">≥ {{ "%.1f"|format(ambang_risiko) }}%</p>
+        <p class="ringkasan-kartu__keterangan">Probabilitas Dropout untuk kategori Berisiko Tinggi</p>
+      </article>
+    </section>
+
+    <section class="bagian-dashboard" aria-labelledby="judul-evaluasi-model">
+      <div class="bagian-dashboard__kepala">
+        <h2 id="judul-evaluasi-model">Evaluasi model</h2>
+        <p>Ringkasan performa model pada data uji.</p>
+      </div>
+      <dl class="metrik-grid">
+        <div class="metrik-kartu"><dt>AUC</dt><dd>{{ "%.2f"|format(metrik_test["AUC"]) }}</dd></div>
+        <div class="metrik-kartu"><dt>PR-AUC</dt><dd>{{ "%.2f"|format(metrik_test["PR-AUC"]) }}</dd></div>
+        {% if session.get('peran') == 'dosen_wali' %}
+          <div class="metrik-kartu"><dt>Recall Dropout</dt><dd>{{ "%.1f"|format(recall_dropout * 100) }}%</dd></div>
+          <div class="metrik-kartu"><dt>Precision Dropout</dt><dd>{{ "%.1f"|format(precision_dropout * 100) }}%</dd></div>
+          <div class="metrik-kartu"><dt>Ditandai berisiko</dt><dd>{{ "%.1f"|format(proporsi_berisiko * 100) }}%</dd></div>
+        {% endif %}
+      </dl>
+    </section>
+
+    {% include "_kepentingan_model.html" %}
+
+    <section class="kartu keterbatasan" aria-labelledby="judul-keterbatasan">
+      <h2 class="kartu__judul" id="judul-keterbatasan">Keterbatasan</h2>
+      <ol>
+        <li>Hasil prediksi merupakan pendukung keputusan, bukan keputusan otomatis.</li>
+        <li>Sekitar {{ "%.0f"|format(proporsi_berisiko * 100) }}% mahasiswa ditandai berisiko; sekitar {{ "%.0f"|format((1 - precision_dropout) * 100) }}% dari yang ditandai bukan Dropout.</li>
+        <li>Model mendeteksi sekitar {{ "%.0f"|format(recall_dropout * 100) }}% mahasiswa Dropout pada data uji.</li>
+        <li>Indikator yang ditampilkan menjelaskan perilaku model, bukan hubungan sebab-akibat.</li>
+        <li>Model dilatih dari data politeknik di Portugal dan belum divalidasi pada data kampus ini.</li>
+      </ol>
+    </section>
+  </div>
+{% endblock %}
